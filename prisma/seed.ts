@@ -8,7 +8,7 @@ async function main() {
   const user = await users();
   try {
     for (const dto of user) {
-      const user = await prisma.user.create({
+      await prisma.user.create({
         data: dto,
       });
     }
