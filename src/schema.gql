@@ -1,0 +1,90 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  """Username"""
+  username: String!
+
+  """Email"""
+  email: String!
+
+  """Password"""
+  password: String!
+
+  """Phone number"""
+  phoneNumber: String!
+
+  """Address"""
+  address: String!
+
+  """Role"""
+  role: Role!
+
+  """Gender"""
+  gender: Gender!
+
+  """Date of birth"""
+  dateOfBirth: String!
+
+  """Avatar"""
+  avatar: String!
+
+  """Provider"""
+  provider: String!
+}
+
+"""The basic roles of User"""
+enum Role {
+  ADMIN
+  MANAGER
+  SALESMAN
+  PURCHASER
+}
+
+"""The basic genders of User"""
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+type Query {
+  user: [User!]!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+}
+
+input CreateUserInput {
+  """Username"""
+  username: String!
+
+  """Email"""
+  email: String!
+
+  """Password"""
+  password: String!
+
+  """Phone number"""
+  phoneNumber: String!
+
+  """Address"""
+  address: String!
+
+  """Role"""
+  role: Role!
+
+  """Gender"""
+  gender: Gender!
+
+  """Date of birth"""
+  dateOfBirth: String!
+
+  """Avatar"""
+  avatar: String!
+
+  """Provider"""
+  provider: String!
+}
