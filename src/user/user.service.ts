@@ -20,7 +20,7 @@ import { LoginUserDTO } from './dto/user';
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create = async (createUserInput: CreateUserInput) => {
+  create = async (createUserInput: CreateUserInput): Promise<User> => {
     const {
       email,
       password,
@@ -61,7 +61,7 @@ export class UserService {
     }
   };
 
-  checkEmailUser = async (email: string, message: string) => {
+  checkEmailUser = async (email: string, message: string): Promise<void> => {
     if (email) {
       const user: User = await this.prismaService.user.findFirst({
         where: {
@@ -72,7 +72,10 @@ export class UserService {
     }
   };
 
-  checkPhoneNumberUser = async (phoneNumber: string, message: string) => {
+  checkPhoneNumberUser = async (
+    phoneNumber: string,
+    message: string,
+  ): Promise<void> => {
     if (phoneNumber) {
       const user: User = await this.prismaService.user.findFirst({
         where: {
@@ -138,9 +141,9 @@ export class UserService {
     }
   };
 
-  findAll() {
-    return `This action returns all user`;
-  }
+  findAll = async (): Promise<User[]> => {
+    return await this.prismaService.user.findMany({});
+  };
 
   findOne(id: number) {
     return `This action returns a #${id} user`;

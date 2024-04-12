@@ -2,6 +2,14 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthToken {
+  """Access Token"""
+  accessToken: String!
+
+  """Refresh Token"""
+  refreshToken: String!
+}
+
 type User {
   """Username"""
   username: String!
@@ -54,7 +62,16 @@ type Query {
 }
 
 type Mutation {
+  login(loginAuthInput: CreateLoginAuthInput!): AuthToken!
   createUser(createUserInput: CreateUserInput!): User!
+}
+
+input CreateLoginAuthInput {
+  """Username"""
+  username: String!
+
+  """Password"""
+  password: String!
 }
 
 input CreateUserInput {

@@ -7,6 +7,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { SalesmanModule } from './salesman/salesman.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { SalesmanModule } from './salesman/salesman.module';
     }),
     UserModule,
     SalesmanModule,
+    // JwtModule.register({}),
   ],
   controllers: [],
   providers: [PrismaService],
