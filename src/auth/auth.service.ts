@@ -2,11 +2,13 @@ import { UserService } from './../user/user.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthInput } from './dto/create-auth.input';
 import { UpdateAuthInput } from './dto/update-auth.input';
+import { GitHubCode } from './dto/auth';
 import { User } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/service';
 import { hash } from 'bcrypt';
+import axios from 'axios';
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,18 +18,30 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  githubLogin = async (code: string): Promise<any> => {
-    if (!code) {
+  githubLogin = async (gitHubCode: GitHubCode): Promise<any> => {
+    const {
+      codeAuth
+    }: GitHubCode = gitHubCode;
+    if (!codeAuth) {
       throw new UnauthorizedException('No user from GitHub');
     }
-    const params = "?client_id=" + process.env.GITHUB_CLIENT_ID  + "&client_secret=" + process.env.GITHUB_CLIENT_SECRET + "&code=" + code;
-    const data = await fetch("https://github.com/login/oauth/access_token"+ params,{
-      method:"POST",
-      headers:{
-        "Accept":"application/json"
-      }
-    })
-    console.log(data)
+    console.log(codeAuth)
+    const params = "?client_id=" + process.env.GITHUB_CLIENT_ID  + "&client_secret=" + process.env.GITHUB_CLIENT_SECRET + "&code=" + codeAuth;
+    try {
+      // Your params here
+      const response = await axios.post('https://github.com/login/oauth/access_token' + params, {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+  
+      console.log('response', response.data);
+      const access_token = response.data
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error.response.data);
+      throw error;
+    }
   };
   validateUser = async (username: string, password: string): Promise<any> => {
     // Check username and password

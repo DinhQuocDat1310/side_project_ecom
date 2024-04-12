@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthResolver } from './auth.resolver';
+import { AuthGitHubResolver, AuthResolver } from './auth.resolver';
 import { PrismaService } from 'src/prisma/service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -13,6 +13,7 @@ import { UserService } from 'src/user/user.service';
 @Module({
   imports: [PassportModule, JwtModule.register({})],
   providers: [
+    AuthGitHubResolver,
     AuthResolver,
     AuthService,
     PrismaService,
