@@ -1,5 +1,5 @@
 import { UserService } from './../user/user.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthInput } from './dto/create-auth.input';
 import { UpdateAuthInput } from './dto/update-auth.input';
 import { User } from '@prisma/client';
@@ -16,6 +16,19 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
+  githubLogin = async (code: string): Promise<any> => {
+    if (!code) {
+      throw new UnauthorizedException('No user from GitHub');
+    }
+    const params = "?client_id=" + process.env.GITHUB_CLIENT_ID  + "&client_secret=" + process.env.GITHUB_CLIENT_SECRET + "&code=" + code;
+    const data = await fetch("https://github.com/login/oauth/access_token"+ params,{
+      method:"POST",
+      headers:{
+        "Accept":"application/json"
+      }
+    })
+    console.log(data)
+  };
   validateUser = async (username: string, password: string): Promise<any> => {
     // Check username and password
     return await this.userService.checkValidateUser({
@@ -77,4 +90,5 @@ export class AuthService {
       refreshToken,
     };
   };
+
 }
