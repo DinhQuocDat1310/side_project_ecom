@@ -22,7 +22,6 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     UserModule,
     SalesmanModule,
-    // JwtModule.register({}),
   ],
   controllers: [],
   providers: [PrismaService],
