@@ -55,16 +55,17 @@ enum Gender {
 }
 
 type Query {
+  githubLogin(gitHubCode: GitHubCode!): GitHubAuth!
   user: [User!]!
+}
+
+input GitHubCode {
+  codeAuth: String!
 }
 
 type Mutation {
   githubLoginMutation(gitHubCode: GitHubCode!): GitHubAuth!
   createUser(createUserInput: CreateUserInput!): User!
-}
-
-input GitHubCode {
-  codeAuth: String!
 }
 
 input CreateUserInput {

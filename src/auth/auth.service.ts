@@ -36,9 +36,10 @@ export class AuthService {
       });
   
       console.log('response', response.data);
-      const access_token = response.data
-      return response.data;
-    } catch (error) {
+     
+      const access_token =response.data
+      return { codeAuth : access_token };   
+     } catch (error) {
       console.error('Error:', error.response.data);
       throw error;
     }

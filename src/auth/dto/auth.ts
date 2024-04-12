@@ -7,8 +7,7 @@ export class PayloadDTO {
 }
 @InputType()
 export class GitHubCode {
-  @IsNotEmpty()
-  @IsString()
+ 
   @Field()
   codeAuth: string;
 }

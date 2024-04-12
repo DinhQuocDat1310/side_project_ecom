@@ -17,8 +17,13 @@ export class AuthGitHubResolver {
   
   @Mutation(() => GitHubAuth)
   githubLoginMutation(@Args('gitHubCode') gitHubCode: GitHubCode) {
-    console.log("🚀 ~ AuthGitHubResolver ~ githubLoginMutation ~ gitHubCode:", gitHubCode)
-    
-  return this.authService.githubLogin(gitHubCode);
+    const rs = this.authService.githubLogin(gitHubCode);
+    console.log("rs",rs)
+  return rs
 }
+
+  @Query(() => GitHubAuth)
+  githubLogin(@Args('gitHubCode') gitHubCode: GitHubCode) {
+    return this.authService.githubLogin(gitHubCode);
+  }
 }
