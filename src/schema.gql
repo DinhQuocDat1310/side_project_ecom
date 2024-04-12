@@ -2,11 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type GitHubAuth {
-  """Username"""
-  codeAuth: String!
-}
-
 type User {
   """Username"""
   username: String!
@@ -54,6 +49,12 @@ enum Gender {
   OTHER
 }
 
+type GitHubAuth {
+  """Username"""
+  codeAuth: String!
+  user: User!
+}
+
 type Query {
   githubLogin(gitHubCode: GitHubCode!): GitHubAuth!
   user: [User!]!
@@ -64,7 +65,6 @@ input GitHubCode {
 }
 
 type Mutation {
-  githubLoginMutation(gitHubCode: GitHubCode!): GitHubAuth!
   createUser(createUserInput: CreateUserInput!): User!
 }
 

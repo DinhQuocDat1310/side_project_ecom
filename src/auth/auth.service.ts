@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/service';
 import { hash } from 'bcrypt';
 import axios from 'axios';
+import { GitHubAuth } from './entities/auth.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,7 +19,7 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  githubLogin = async (gitHubCode: GitHubCode): Promise<any> => {
+  getGitHubAccessToken = async (gitHubCode: GitHubCode): Promise<any> => {
     const {
       codeAuth
     }: GitHubCode = gitHubCode;
@@ -29,19 +30,60 @@ export class AuthService {
     const params = "?client_id=" + process.env.GITHUB_CLIENT_ID  + "&client_secret=" + process.env.GITHUB_CLIENT_SECRET + "&code=" + codeAuth;
     try {
       // Your params here
-      const response = await axios.post('https://github.com/login/oauth/access_token' + params, {
+      // const response = await axios.post('https://github.com/login/oauth/access_token' + params, {
+      //   headers: {
+      //     'Accept': 'application/json',
+      //   }
+      // });
+      const res = await fetch('https://github.com/login/oauth/access_token'+params, {
+        method: "POST",
         headers: {
-          'Accept': 'application/json',
-        }
-      });
-  
-      console.log('response', response.data);
-     
-      const access_token =response.data
+              'Accept': "application/json"
+        }}).then((response) => response.json());
+      const access_token  = res.access_token;
       return { codeAuth : access_token };   
      } catch (error) {
-      console.error('Error:', error.response.data);
+      console.error('Error:', error.response);
       throw error;
+    }
+  };
+  
+  githubLogin = async (gitHubCode: GitHubCode): Promise<any> => {
+   try {
+     const data = await this.getGitHubAccessToken(gitHubCode)
+     const access_token = data.codeAuth;
+     console.log(access_token)
+     if(!access_token){
+      throw new UnauthorizedException('Something wrong with GitHub');
+     }
+     const response = await axios.get('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    console.log('GitHub API Response:', response);
+    const userGithub = response;
+    const userName = userGithub.data.login;
+    console.log("userGithub.data",userGithub.data)
+    const GitHubAuth =  { codeAuth: " ", user:  {
+      username: userName,
+      email: userGithub.data.email,
+      password: 'password123',
+      phoneNumber: '1234567890',
+      address: '123 Main St, City, Country',
+      role: "ADMIN",
+      gender: "MALE",
+      dateOfBirth: '1990-01-01',
+      avatar: 'https://example.com/avatar.jpg',
+      provider: 'local' // Assuming this is the default provider
+    }}
+    const returnData = GitHubAuth
+    return returnData
+   } catch (error) {
+    console.error('Error:', error.response);
+    throw error;
     }
   };
   validateUser = async (username: string, password: string): Promise<any> => {

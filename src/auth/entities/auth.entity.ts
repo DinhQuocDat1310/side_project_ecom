@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { User } from 'src/user/entities/user.entity';
 
 @ObjectType()
 export class Auth {
@@ -12,6 +13,8 @@ export class GitHubAuth {
 
   @Field(() => String, { description: 'Username' })
   codeAuth?: string;
-
   
+  @Field(() => User)
+  user: User;
 }
+
