@@ -5,6 +5,8 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
+import { StatusUser } from '@prisma/client';
+import { Status } from 'src/guard/decorators';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -17,6 +19,7 @@ export class UserResolver {
 
   @Query(() => [User], { name: 'user' })
   @UseGuards(AccessJwtAuthGuard)
+  @Status(StatusUser.VERIFIED)
   findAll() {
     return this.userService.findAll();
   }
