@@ -2,14 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AuthToken {
-  """Access Token"""
-  accessToken: String!
-
-  """Refresh Token"""
-  refreshToken: String!
-}
-
 type User {
   """Username"""
   username: String!
@@ -55,6 +47,14 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+}
+
+type AuthToken {
+  """Access Token"""
+  accessToken: String!
+
+  """Refresh Token"""
+  refreshToken: String!
 }
 
 type GitHubAuth {

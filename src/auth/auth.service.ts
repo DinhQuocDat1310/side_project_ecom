@@ -8,6 +8,8 @@ import { hash } from 'bcrypt';
 import axios from 'axios';
 import { AuthToken } from './entities/auth.entity';
 import { UserSignIn } from './dto/auth';
+import fetch from 'node-fetch';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,6 +28,7 @@ export class AuthService {
     }
     console.log(codeAuth)
     const params = "?client_id=" + process.env.GITHUB_CLIENT_ID  + "&client_secret=" + process.env.GITHUB_CLIENT_SECRET + "&code=" + codeAuth;
+    console.log(params)
     try {
       // Your params here
       // const response = await axios.post('https://github.com/login/oauth/access_token' + params, {
@@ -38,10 +41,11 @@ export class AuthService {
         headers: {
               'Accept': "application/json"
         }}).then((response) => response.json());
+        console.log(42, res)
       const access_token  = res.access_token;
       return { codeAuth : access_token };   
      } catch (error) {
-      console.error('Error:', error.response);
+      console.error('Error:', error);
       throw error;
     }
   };
@@ -122,6 +126,7 @@ export class AuthService {
 
   login = async (user: UserSignIn) => {
     try {
+      console.log(125,user);
       const tokens: AuthToken = await this.generate_token(user);
       if (tokens) {
         user['hashedRefreshToken'] = tokens.refreshToken;
