@@ -1,7 +1,10 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Gender, Role, StatusUser } from '@prisma/client';
 
 @ObjectType()
-export class Auth {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+export class AuthToken {
+  @Field(() => String, { description: 'Access Token' })
+  accessToken: string;
+  @Field(() => String, { description: 'Refresh Token' })
+  refreshToken: string;
 }
