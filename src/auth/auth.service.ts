@@ -1,15 +1,13 @@
 import { UserService } from './../user/user.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateAuthInput } from './dto/create-auth.input';
-import { UpdateAuthInput } from './dto/update-auth.input';
 import { GitHubCode } from './dto/auth';
-import { User } from '@prisma/client';
+import { Injectable, InternalServerErrorException ,UnauthorizedException} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/service';
 import { hash } from 'bcrypt';
 import axios from 'axios';
-import { GitHubAuth } from './entities/auth.entity';
+import { AuthToken } from './entities/auth.entity';
+import { UserSignIn } from './dto/auth';
 @Injectable()
 export class AuthService {
   constructor(
@@ -122,7 +120,20 @@ export class AuthService {
         });
   };
 
-  generate_token = async (user: User) => {
+  login = async (user: UserSignIn) => {
+    try {
+      const tokens: AuthToken = await this.generate_token(user);
+      if (tokens) {
+        user['hashedRefreshToken'] = tokens.refreshToken;
+        await this.saveUserCreatedWithToken(user);
+      }
+      return tokens;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  };
+
+  generate_token = async (user: UserSignIn) => {
     const payload = {
       username: user.email ? user.email : user.phoneNumber,
       sub: user.id,

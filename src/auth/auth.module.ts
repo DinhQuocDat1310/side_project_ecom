@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthGitHubResolver, AuthResolver } from './auth.resolver';
 import { PrismaService } from 'src/prisma/service';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshTokenJwtStrategy } from './strategies/refresh-token-jwt.strategy';
 import { AccessTokenJwtStrategy } from './strategies/access-token-jwt.strategy';
@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 
 @Module({
-  imports: [PassportModule, JwtModule.register({})],
+  imports: [PassportModule],
   providers: [
     AuthGitHubResolver,
     AuthResolver,
@@ -22,6 +22,7 @@ import { UserService } from 'src/user/user.service';
     AccessTokenJwtStrategy,
     ConfigService,
     UserService,
+    JwtService,
   ],
 })
 export class AuthModule {}
