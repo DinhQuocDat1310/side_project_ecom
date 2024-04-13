@@ -17,6 +17,7 @@ export class UserSignIn {
   password: string;
   phoneNumber: string;
   address: string;
+  status: StatusUser;
   role: Role;
   gender: Gender;
   dateOfBirth: string;
