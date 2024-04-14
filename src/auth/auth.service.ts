@@ -79,7 +79,7 @@ export class AuthService {
       if (userGithub){
         const user = await this.validateUser(userName, password);
         // create
-        if (!user == null) {
+        if (user == null) {
           const UserSignIn = {
             username: userGithub.email,
             email: userGithub.email,
@@ -109,6 +109,7 @@ export class AuthService {
         }
       }
     } catch (error) {
+      console.log("something wrong when signing in with github")
       console.error('Error:', error.response);
       throw error;
     }
