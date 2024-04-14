@@ -57,14 +57,8 @@ type AuthToken {
   refreshToken: String!
 }
 
-type GitHubAuth {
-  """Username"""
-  codeAuth: String!
-  user: User!
-}
-
 type Query {
-  githubLogin(gitHubCode: GitHubCode!): GitHubAuth!
+  githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
 }
 

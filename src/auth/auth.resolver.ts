@@ -17,16 +17,20 @@ export class AuthGitHubResolver {
   
 
 
-  @Query(() => GitHubAuth)
-  githubLogin(@Args('gitHubCode') gitHubCode: GitHubCode) {
-    return this.authService.githubLogin(gitHubCode);
-  }
+  // @Query(() => AuthToken)
+  // githubLogin(@Args('gitHubCode') gitHubCode: GitHubCode) {
+
+  //   return this.authService.githubLogin(gitHubCode);
+  // }
 }
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
-
+  @Query(() => AuthToken)
+  githubLogin(@Args('gitHubCode') gitHubCode: GitHubCode) {
+    return this.authService.githubLogin(gitHubCode);
+  }
   @Mutation(() => AuthToken)
   @UseGuards(GqlLocalAuthGuard, StatusGuard)
   @Status(StatusUser.INIT, StatusUser.VERIFIED)
