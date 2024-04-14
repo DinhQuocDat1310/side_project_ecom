@@ -2,14 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AuthToken {
-  """Access Token"""
-  accessToken: String!
-
-  """Refresh Token"""
-  refreshToken: String!
-}
-
 type User {
   """Username"""
   username: String!
@@ -57,8 +49,21 @@ enum Gender {
   OTHER
 }
 
+type AuthToken {
+  """Access Token"""
+  accessToken: String!
+
+  """Refresh Token"""
+  refreshToken: String!
+}
+
 type Query {
+  githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
+}
+
+input GitHubCode {
+  codeAuth: String!
 }
 
 type Mutation {

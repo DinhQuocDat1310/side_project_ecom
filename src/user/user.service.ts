@@ -111,6 +111,7 @@ export class UserService {
         return user;
       }
       if (user && !password && user.provider === GOOGLE_PROVIDER) return user;
+      
       return null;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
