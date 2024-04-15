@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { EmailService } from './email.service';
 import { SendOTPEmail } from './entities/email.entity';
-import { VerifyOTPInput } from './dto/create-email.input';
+import { VerifyOTPInput } from './dto/create-otp.input';
 import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
 import { Status } from 'src/guard/decorators';
