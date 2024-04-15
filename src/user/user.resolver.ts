@@ -14,15 +14,15 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.userService.create(createUserInput);
+  async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
+    return await this.userService.create(createUserInput);
   }
 
   @Query(() => [User], { name: 'user' })
   @UseGuards(AccessJwtAuthGuard, StatusGuard)
   @Status(StatusUser.VERIFIED)
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   // @Query(() => User, { name: 'user' })

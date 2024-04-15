@@ -23,10 +23,10 @@ export class EmailResolver {
   @Mutation(() => SendOTPEmail)
   @UseGuards(AccessJwtAuthGuard, StatusGuard)
   @Status(StatusUser.INIT)
-  verifyOtp(
+  async verifyOtp(
     @Args('otpInput') otpInput: VerifyOTPInput,
     @Context() context: any,
   ) {
-    return this.emailService.verifyOTP(context.req.user, otpInput.otp);
+    return await this.emailService.verifyOTP(context.req.user, otpInput.otp);
   }
 }
