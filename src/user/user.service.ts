@@ -10,7 +10,7 @@ import {
   MESSAGE_EXISTED_EMAIL,
   MESSAGE_EXISTED_PHONE,
 } from 'src/constants/user';
-import { Role, User } from '@prisma/client';
+import { Role, StatusUser, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/service';
 import * as moment from 'moment';
 import { hash, compare } from 'bcrypt';
@@ -139,6 +139,17 @@ export class UserService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  };
+
+  verify_email_otp = async (email: string) => {
+    return await this.prismaService.user.update({
+      data: {
+        status: StatusUser.VERIFIED,
+      },
+      where: {
+        email,
+      },
+    });
   };
 
   findAll = async (): Promise<User[]> => {

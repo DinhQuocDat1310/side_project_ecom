@@ -29,7 +29,9 @@
   },
   "dependencies": {
     "@apollo/server": "^4.10.2",
+    "@getbrevo/brevo": "^1.0.1",
     "@nestjs/apollo": "^12.1.0",
+    "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^9.0.0",
@@ -39,6 +41,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@prisma/client": "^5.12.1",
     "bcrypt": "^5.1.1",
+    "cache-manager": "^5.5.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "graphql": "^16.8.1",

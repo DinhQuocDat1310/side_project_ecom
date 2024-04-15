@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
 import { StatusUser } from '@prisma/client';
 import { Status } from 'src/guard/decorators';
+import { StatusGuard } from 'src/guard/userStatus.guard';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -18,7 +19,7 @@ export class UserResolver {
   }
 
   @Query(() => [User], { name: 'user' })
-  @UseGuards(AccessJwtAuthGuard)
+  @UseGuards(AccessJwtAuthGuard, StatusGuard)
   @Status(StatusUser.VERIFIED)
   findAll() {
     return this.userService.findAll();
