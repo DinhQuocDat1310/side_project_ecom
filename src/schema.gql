@@ -2,14 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AuthToken {
-  """Access Token"""
-  accessToken: String!
-
-  """Refresh Token"""
-  refreshToken: String!
-}
-
 type User {
   """Username"""
   username: String!
@@ -63,11 +55,23 @@ type SendOTPEmail {
 
   """Response status code"""
   statusCode: Int!
+
+type AuthToken {
+  """Access Token"""
+  accessToken: String!
+
+  """Refresh Token"""
+  refreshToken: String!
 }
 
 type Query {
+  githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
+}
+
+input GitHubCode {
+  codeAuth: String!
 }
 
 type Mutation {
