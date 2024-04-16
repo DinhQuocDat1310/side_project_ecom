@@ -7,7 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { StatusUser } from '@prisma/client';
 import { STATUS_KEY } from './decorators';
-import { RequestUser } from 'src/auth/dto/auth';
 
 @Injectable()
 export class StatusGuard implements CanActivate {
@@ -21,10 +20,10 @@ export class StatusGuard implements CanActivate {
     if (!requireStatus) {
       return true;
     }
-    const request: any = context.switchToHttp().getNext();
-    const isValid = requireStatus.some(
-      (status) => status === request.user.status,
-    );
+    const ctx: any = context.switchToHttp().getNext();
+    const userData = !ctx.user ? ctx.req.user : ctx.user;
+
+    const isValid = requireStatus.some((status) => status === userData.status);
     if (!isValid)
       throw new ForbiddenException(
         `Your account is don't have permission to access this resource`,
