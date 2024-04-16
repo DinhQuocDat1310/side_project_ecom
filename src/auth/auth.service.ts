@@ -1,6 +1,7 @@
 import { UserService } from './../user/user.service';
-import { GitHubCode } from './dto/auth';
+import { GitHubCode, UserSignInWithRfToken } from './dto/auth';
 import {
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -8,14 +9,16 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/service';
-import { hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 import axios from 'axios';
-import { AuthToken } from './entities/auth.entity';
+import {
+  AuthAccessToken,
+  AuthMessage,
+  AuthToken,
+} from './entities/auth.entity';
 import { UserSignIn } from './dto/auth';
 import fetch from 'node-fetch';
-import { CreateUserInput } from 'src/user/dto/create-user.input';
-import { Gender, Role, StatusUser } from '@prisma/client';
-import moment from 'moment';
+import { Gender, Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -74,46 +77,53 @@ export class AuthService {
 
       const userGithub = response.data;
       const userName = userGithub.email;
-      const password =  'userGithub'+ userGithub.login + userGithub.email + userGithub.id;
+      const password =
+        'userGithub' + userGithub.login + userGithub.email + userGithub.id;
       // auth successfully
-      if (userGithub){
+      if (userGithub) {
         const user = await this.validateUser(userName, password);
         // create
         if (user == null) {
           const UserSignIn = {
             username: userGithub.email,
             email: userGithub.email,
-            password: 'userGithub'+ userGithub.login + userGithub.email + userGithub.id,
+            password:
+              'userGithub' +
+              userGithub.login +
+              userGithub.email +
+              userGithub.id,
             phoneNumber: '',
             address: userGithub.location,
             role: Role.SALESMAN,
-            gender:Gender.MALE,
+            gender: Gender.MALE,
             dateOfBirth: null,
-            avatar: userGithub.avatar_url? userGithub.avatar_url: " ",
+            avatar: userGithub.avatar_url ? userGithub.avatar_url : ' ',
             provider: 'local',
-          }
-          // 
-          const createdUser = await this.userService.create(UserSignIn)
+          };
+          //
+          const createdUser = await this.userService.create(UserSignIn);
           delete createdUser.dateOfBirth;
           const dataLogin = {
-            ...createdUser, dateOfBirth:" "
+            ...createdUser,
+            dateOfBirth: ' ',
           };
-          // 
-          const tokens = await this.login(dataLogin)
-          return tokens
+          //
+          const tokens = await this.login(dataLogin);
+          return tokens;
           // login
-        }else{
-          const UserSignIn = user
-          const tokens = await this.login(UserSignIn)
-          return tokens
+        } else {
+          const UserSignIn = user;
+          const tokens = await this.login(UserSignIn);
+          return tokens;
         }
       }
     } catch (error) {
-      console.log("something wrong when signing in with github")
+      console.log('something wrong when signing in with github');
       console.error('Error:', error.response);
       throw error;
     }
   };
+
   validateUser = async (username: string, password: string): Promise<any> => {
     // Check username and password
     return await this.userService.checkValidateUser({
@@ -152,7 +162,7 @@ export class AuthService {
 
   login = async (user: UserSignIn) => {
     try {
-      const tokens: AuthToken = await this.generate_token(user);
+      const tokens: AuthToken = await this.generateToken(user);
       if (tokens) {
         user['hashedRefreshToken'] = tokens.refreshToken;
         await this.saveUserCreatedWithToken(user);
@@ -163,7 +173,7 @@ export class AuthService {
     }
   };
 
-  generate_token = async (user: UserSignIn) => {
+  generateToken = async (user: UserSignIn) => {
     const payload = {
       username: user.email ? user.email : user.phoneNumber,
       sub: user.id,
@@ -186,6 +196,63 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+    };
+  };
+
+  logout = async (user: UserSignIn): Promise<AuthMessage> => {
+    try {
+      const getUser = await this.prismaService.auth.findFirst({
+        where: {
+          userId: user.id,
+          hashedRefreshToken: {
+            not: null,
+          },
+        },
+      });
+      if (!getUser) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Invalid to logout',
+        };
+      }
+      await this.prismaService.auth.update({
+        where: {
+          userId: getUser.userId,
+        },
+        data: {
+          hashedRefreshToken: null,
+        },
+      });
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User logged out',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  };
+
+  refreshToken = async (
+    userData: UserSignInWithRfToken,
+  ): Promise<AuthAccessToken> => {
+    const user = await this.prismaService.auth.findUnique({
+      where: {
+        userId: userData.id,
+        hashedRefreshToken: {
+          not: null,
+        },
+      },
+    });
+    if (!user) throw new UnauthorizedException();
+    const compareRefreshToken = await compare(
+      userData.refreshToken,
+      user.hashedRefreshToken,
+    );
+    if (!compareRefreshToken) throw new UnauthorizedException();
+    userData['is_refresh'] = true;
+    const tokens: AuthToken = await this.generateToken(userData);
+    return {
+      accessToken: tokens.accessToken,
     };
   };
 }
