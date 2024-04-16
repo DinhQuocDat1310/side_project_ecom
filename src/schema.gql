@@ -49,19 +49,33 @@ enum Gender {
   OTHER
 }
 
-type SendOTPEmail {
-  """Response message send OTP email"""
-  message: String!
-
-  """Response status code"""
-  statusCode: Int!
-
 type AuthToken {
   """Access Token"""
   accessToken: String!
 
   """Refresh Token"""
   refreshToken: String!
+}
+
+type AuthAccessToken {
+  """Access Token"""
+  accessToken: String!
+}
+
+type AuthMessage {
+  """Response message send OTP email"""
+  message: String!
+
+  """Response status code"""
+  statusCode: Int!
+}
+
+type SendOTPEmail {
+  """Response message send OTP email"""
+  message: String!
+
+  """Response status code"""
+  statusCode: Int!
 }
 
 type Query {
@@ -76,6 +90,8 @@ input GitHubCode {
 
 type Mutation {
   login(loginAuthInput: CreateLoginAuthInput!): AuthToken!
+  logout: AuthMessage!
+  refreshToken: AuthAccessToken!
   createUser(createUserInput: CreateUserInput!): User!
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
 }
@@ -121,6 +137,6 @@ input CreateUserInput {
 }
 
 input VerifyOTPInput {
-  """Example field (placeholder)"""
+  """OTP Input"""
   otp: String!
 }
