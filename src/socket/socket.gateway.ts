@@ -6,8 +6,15 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
+import { UseGuards } from '@nestjs/common';
+import { WsJwtGuard } from 'src/guard/wsJwt.guard';
 
-@WebSocketGateway()
+@WebSocketGateway(+process.env.PORT_SOCKET, {
+  cors: {
+    origin: '*',
+  },
+})
+@UseGuards(WsJwtGuard)
 export class SocketGateway {
   constructor(private readonly socketService: SocketService) {}
 

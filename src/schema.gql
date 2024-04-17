@@ -3,6 +3,9 @@
 # ------------------------------------------------------
 
 type User {
+  """Id"""
+  id: String!
+
   """Username"""
   username: String!
 
@@ -78,10 +81,44 @@ type SendOTPEmail {
   statusCode: Int!
 }
 
+type Conversation {
+  """Private Conversation ID"""
+  id: String!
+
+  """Title"""
+  title: String!
+
+  """Type Conversation"""
+  type: String!
+
+  """Creator ID"""
+  creatorId: String!
+
+  """Created at"""
+  createdAt: DateTime!
+
+  """Updated at"""
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ChatMessage {
+  """Response message chat"""
+  message: String!
+
+  """Response status code"""
+  statusCode: Int!
+}
+
 type Query {
   githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
+  conversation: [Conversation!]!
 }
 
 input GitHubCode {
@@ -94,6 +131,7 @@ type Mutation {
   refreshToken: AuthAccessToken!
   createUser(createUserInput: CreateUserInput!): User!
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
+  createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
 }
 
 input CreateLoginAuthInput {
@@ -139,4 +177,12 @@ input CreateUserInput {
 input VerifyOTPInput {
   """OTP Input"""
   otp: String!
+}
+
+input PrivateConversationInput {
+  """Title of Conversation"""
+  title: String
+
+  """Participation user ID"""
+  participationUserId: String!
 }

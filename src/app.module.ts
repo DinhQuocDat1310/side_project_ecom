@@ -9,6 +9,8 @@ import { UserModule } from './user/user.module';
 import { SalesmanModule } from './salesman/salesman.module';
 import { EmailModule } from './email/email.module';
 import { SocketModule } from './socket/socket.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { SocketModule } from './socket/socket.module';
     SalesmanModule,
     EmailModule,
     SocketModule,
+    EventEmitterModule.forRoot({}),
+    ChatModule,
   ],
   controllers: [],
   providers: [PrismaService],

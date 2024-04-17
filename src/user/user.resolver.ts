@@ -20,7 +20,7 @@ export class UserResolver {
 
   @Query(() => [User], { name: 'user' })
   @UseGuards(AccessJwtAuthGuard, StatusGuard)
-  @Status(StatusUser.VERIFIED)
+  @Status(StatusUser.INIT, StatusUser.VERIFIED)
   async findAll() {
     return await this.userService.findAll();
   }
