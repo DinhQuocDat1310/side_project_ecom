@@ -3,7 +3,10 @@ import { ChatService } from './chat.service';
 import { ChatMessage, Conversation } from './entities/chat.entity';
 import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
-import { PrivateConversationInput } from './dto/create-chat.input';
+import {
+  GroupConversationInput,
+  PrivateConversationInput,
+} from './dto/create-chat.input';
 
 @Resolver()
 @UseGuards(AccessJwtAuthGuard)
@@ -25,6 +28,18 @@ export class ChatResolver {
   @Query(() => [Conversation], { name: 'conversation' })
   findOne(@Context() context: any) {
     return this.chatService.getConversationOfCreator(context.req.user);
+  }
+
+  @Mutation(() => ChatMessage)
+  async createGroupConversation(
+    @Context() context: any,
+    @Args('groupConversationInput')
+    groupConversationInput: GroupConversationInput,
+  ) {
+    return await this.chatService.createGroupConversation(
+      context.req.user,
+      groupConversationInput,
+    );
   }
 
   // @Mutation(() => Chat)

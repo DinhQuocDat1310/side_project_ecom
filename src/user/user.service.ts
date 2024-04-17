@@ -163,7 +163,8 @@ export class UserService {
           id,
         },
       });
-      return user;
+      if (user) return user;
+      return null;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

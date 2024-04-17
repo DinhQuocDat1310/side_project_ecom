@@ -132,6 +132,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
   createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
+  createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
 }
 
 input CreateLoginAuthInput {
@@ -180,9 +181,17 @@ input VerifyOTPInput {
 }
 
 input PrivateConversationInput {
-  """Title of Conversation"""
+  """Title of Conversation Private"""
   title: String
 
   """Participation user ID"""
   participationUserId: String!
+}
+
+input GroupConversationInput {
+  """Title of Conversation Group"""
+  title: String
+
+  """Participation user ID"""
+  participationUserId: [String!]!
 }
