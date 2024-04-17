@@ -8,6 +8,7 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { SalesmanModule } from './salesman/salesman.module';
 import { EmailModule } from './email/email.module';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EmailModule } from './email/email.module';
     UserModule,
     SalesmanModule,
     EmailModule,
+    SocketModule,
   ],
   controllers: [],
   providers: [PrismaService],
