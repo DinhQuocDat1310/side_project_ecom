@@ -41,29 +41,4 @@ export class ChatResolver {
       groupConversationInput,
     );
   }
-
-  // @Mutation(() => Chat)
-  // createChat(@Args('createChatInput') createChatInput: CreateChatInput) {
-  //   return this.chatService.create(createChatInput);
-  // }
-
-  // @Query(() => [Chat], { name: 'chat' })
-  // findAll() {
-  //   return this.chatService.findAll();
-  // }
-
-  // @Query(() => Chat, { name: 'chat' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.chatService.findOne(id);
-  // }
-
-  // @Mutation(() => Chat)
-  // updateChat(@Args('updateChatInput') updateChatInput: UpdateChatInput) {
-  //   return this.chatService.update(updateChatInput.id, updateChatInput);
-  // }
-
-  // @Mutation(() => Chat)
-  // removeChat(@Args('id', { type: () => Int }) id: number) {
-  //   return this.chatService.remove(id);
-  // }
 }
