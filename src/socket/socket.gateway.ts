@@ -1,13 +1,16 @@
 import { SocketService } from './socket.service';
-import { CreateSocketDto } from './dto/create-socket.dto';
-import { UpdateSocketDto } from './dto/update-socket.dto';
 import {
+  ConnectedSocket,
   MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { UseGuards } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { WsJwtGuard } from 'src/guard/wsJwt.guard';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway(+process.env.PORT_SOCKET, {
   cors: {
@@ -15,31 +18,34 @@ import { WsJwtGuard } from 'src/guard/wsJwt.guard';
   },
 })
 @UseGuards(WsJwtGuard)
-export class SocketGateway {
+export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  private readonly logger = new Logger(SocketGateway.name);
   constructor(private readonly socketService: SocketService) {}
 
-  @SubscribeMessage('createSocket')
-  create(@MessageBody() createSocketDto: CreateSocketDto) {
-    return this.socketService.create(createSocketDto);
+  @WebSocketServer()
+  server: Server;
+
+  handleDisconnect(client: Socket) {
+    client.rooms.forEach((room: string) => {
+      this.logger.debug('Socket ID: ' + room + ' disconnected to server'); // Log each element of the Set
+    });
   }
 
-  @SubscribeMessage('findAllSocket')
-  findAll() {
-    return this.socketService.findAll();
+  handleConnection(client: Socket) {
+    client.rooms.forEach((room: string) => {
+      this.logger.debug('Socket ID: ' + room + ' connected to server'); // Log each element of the Set
+    });
+    console.log(
+      'Authenticated user connected:',
+      client.handshake.headers.authorization,
+    );
   }
 
-  @SubscribeMessage('findOneSocket')
-  findOne(@MessageBody() id: number) {
-    return this.socketService.findOne(id);
-  }
-
-  @SubscribeMessage('updateSocket')
-  update(@MessageBody() updateSocketDto: UpdateSocketDto) {
-    return this.socketService.update(updateSocketDto.id, updateSocketDto);
-  }
-
-  @SubscribeMessage('removeSocket')
-  remove(@MessageBody() id: number) {
-    return this.socketService.remove(id);
+  @SubscribeMessage('client_send_message')
+  handleMessageEvent(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: string,
+  ) {
+    this.server.emit('sever_bind_message', body);
   }
 }
