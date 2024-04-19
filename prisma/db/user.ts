@@ -13,5 +13,14 @@ export const users = async (): Promise<any[]> => {
     username: 'Administrator',
   };
 
-  return [admin];
+  const bot: Prisma.UserCreateInput = {
+    email: 'bot@gmail.com',
+    gender: 'OTHER',
+    password,
+    role: 'MANAGER',
+    status: 'VERIFIED',
+    username: 'Bot',
+  };
+
+  return [admin, bot];
 };

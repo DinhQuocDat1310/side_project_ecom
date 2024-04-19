@@ -82,6 +82,7 @@ model Conversation {
   updatedAt           DateTime                    @updatedAt
   createdAt           DateTime                    @default(now())
   type                TypeConversation            @default(PRIVATE)
+  isBot               Boolean                     @default(false)
   creator             User                        @relation(fields: [creatorId], references: [id])
   creatorId           String                      @db.ObjectId
   deletedConversation DeletedConversation?

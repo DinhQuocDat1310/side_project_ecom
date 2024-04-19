@@ -5,14 +5,20 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import {
+  CreateMessageInput,
   GroupConversationInput,
   PrivateConversationInput,
 } from './dto/create-chat.input';
 import { PrismaService } from 'src/prisma/service';
 import { UserService } from 'src/user/user.service';
 import { UserSignIn } from 'src/auth/dto/auth';
-import { Conversation, MemberRole, TypeConversation } from '@prisma/client';
-import { ChatMessage } from './entities/chat.entity';
+import {
+  Conversation,
+  MemberRole,
+  MessageStatus,
+  TypeConversation,
+} from '@prisma/client';
+import { ChatMessage, MessageData } from './entities/chat.entity';
 import mongoose from 'mongoose';
 
 @Injectable()
@@ -262,6 +268,96 @@ export class ChatService {
       return false;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
+    }
+  };
+
+  createMessage = async (
+    user: UserSignIn,
+    createMessageInput: CreateMessageInput,
+  ): Promise<MessageData> => {
+    const { messageText, conversationId } = createMessageInput;
+    await this.checkAllConversationExisted(user.id, conversationId);
+
+    try {
+      const message = await this.prismaService.$transaction(
+        async (prisma: PrismaService) => {
+          return await prisma.message.create({
+            data: {
+              sender: {
+                connect: {
+                  id: user.id,
+                },
+              },
+              message: messageText,
+              messageStatus: MessageStatus.SEND,
+              conversation: {
+                connect: {
+                  id: conversationId,
+                },
+              },
+            },
+            select: {
+              id: true,
+              message: true,
+              messageStatus: true,
+              senderId: true,
+              conversationId: true,
+              createdAt: true,
+              updatedAt: true,
+              deletedAt: true,
+            },
+          });
+        },
+      );
+      return message;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  };
+
+  checkAllConversationExisted = async (
+    creatorId: string,
+    conversationId: string,
+  ): Promise<any> => {
+    const conservation = await this.prismaService.conversation.findFirst({
+      where: {
+        OR: [
+          {
+            creatorId,
+          },
+          {
+            participant: {
+              every: {
+                participant: {
+                  userId: creatorId,
+                },
+              },
+            },
+          },
+        ],
+        id: conversationId,
+      },
+    });
+    if (!conservation)
+      throw new BadRequestException('Conservation ID not found');
+    return conservation;
+  };
+
+  getAllMessageOfConversationID = async (
+    user: UserSignIn,
+    conversationID: string,
+  ): Promise<Array<MessageData>> => {
+    const conversation = await this.checkAllConversationExisted(
+      user.id,
+      conversationID,
+    );
+    if (conversation) {
+      const messages = await this.prismaService.message.findMany({
+        where: {
+          conversationId: conversation.id,
+        },
+      });
+      return messages;
     }
   };
 }
