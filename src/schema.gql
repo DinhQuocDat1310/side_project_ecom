@@ -114,11 +114,39 @@ type ChatMessage {
   statusCode: Int!
 }
 
+type ChatbotConversation {
+  """Chatbot Conversation ID"""
+  id: String!
+
+  """Title"""
+  title: String!
+
+  """Type Conversation"""
+  type: String!
+
+  """Creator ID"""
+  creatorId: String!
+
+  """Created at"""
+  createdAt: DateTime!
+
+  """Updated at"""
+  updatedAt: DateTime!
+}
+
+type ChatBotMessage {
+  """Response message chat"""
+  message: String!
+
+  """Response status code"""
+  statusCode: Int!
+}
+
 type Query {
   githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
-  conversation: [Conversation!]!
+  conversation: [ChatbotConversation!]!
 }
 
 input GitHubCode {
@@ -133,6 +161,7 @@ type Mutation {
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
   createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
   createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
+  createChatBotConversation(chatbotConversationInput: ChatbotConversationInput!): ChatBotMessage!
 }
 
 input CreateLoginAuthInput {
@@ -194,4 +223,12 @@ input GroupConversationInput {
 
   """Participation user ID"""
   participationUserId: [String!]!
+}
+
+input ChatbotConversationInput {
+  """Title of Conversation Chatbot"""
+  title: String
+
+  """Participation user ID"""
+  participationUserId: String!
 }

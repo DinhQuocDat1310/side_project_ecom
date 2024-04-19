@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { ChatBotService } from './chat-bot.service';
 import { ChatService } from 'src/chat/chat.service';
 
-import { ChatMessage, ChatbotConversation } from './entities/chat-bot.entity';
+import { ChatBotMessage, ChatbotConversation } from './entities/chat-bot.entity';
 import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
 import {
@@ -11,15 +11,14 @@ import {
 
 @Resolver()
 @UseGuards(AccessJwtAuthGuard)
-export class ChatResolver {
+export class ChatBotResolver {
   constructor(
-    private readonly chatBotService: ChatBotService, 
-    private readonly chatService: ChatService) {}
+    private readonly chatBotService: ChatBotService) {}
 
-  @Mutation(() => ChatMessage)
+  @Mutation(() => ChatBotMessage)
   async createChatBotConversation(
     @Context() context: any,
-    @Args('privateConversationInput')
+    @Args('chatbotConversationInput')
     chatbotConversationInput: ChatbotConversationInput,
   ) {
     return await this.chatBotService.createChatBotConversation(

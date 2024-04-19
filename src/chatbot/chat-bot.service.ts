@@ -12,7 +12,7 @@ import { UserService } from 'src/user/user.service';
 import { ChatService } from 'src/chat/chat.service';
 import { UserSignIn } from 'src/auth/dto/auth';
 import { Conversation, MemberRole, TypeConversation } from '@prisma/client';
-import { ChatMessage } from './entities/chat-bot.entity';
+import { ChatBotMessage } from './entities/chat-bot.entity';
 import mongoose from 'mongoose';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class ChatBotService {
   createChatBotConversation = async (
     user: UserSignIn,
     chatbotConversationInput: ChatbotConversationInput,
-  ): Promise<ChatMessage> => {
+  ): Promise<ChatBotMessage> => {
     const { title, participationUserId } = chatbotConversationInput;
     //First check format ObjectID
     await this.chatService.isValidObjectID(participationUserId);

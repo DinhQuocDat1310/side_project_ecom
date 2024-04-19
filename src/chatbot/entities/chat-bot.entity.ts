@@ -18,7 +18,7 @@ export class ChatbotConversation {
 }
 
 @ObjectType()
-export class ChatMessage {
+export class ChatBotMessage {
   @Field(() => String, { description: 'Response message chat' })
   message: string;
   @Field(() => Int, { description: 'Response status code' })
