@@ -65,17 +65,4 @@ export class ChatResolver {
       conversationID,
     );
   }
-
-  // @ApiBody({ type: MessageDTO })
-  // @Post('')
-  // async createMessage(@Request() userReq: any, @Body() messageDto: MessageDTO) {
-  //   const message = await this.messagesService.createMessage(
-  //     userReq.user,
-  //     messageDto,
-  //   );
-  //   //Emit Event: message.create
-  //   //Emit Data: message
-  //   this.eventEmitter.emit('message.create', message);
-  //   return message;
-  // }
 }
