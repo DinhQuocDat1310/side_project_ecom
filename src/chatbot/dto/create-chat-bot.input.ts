@@ -32,3 +32,15 @@ export class ChatbotConversationInput {
   @Field(() => String, { description: 'Participation user ID' })
   participationUserId: string;
 }
+
+@InputType()
+export class CreateChatBotMessageInput {
+  @Field(() => String, {
+    description: 'Conversation ID',
+  })
+  conversationId: string;
+  @Field(() => String, {
+    description: 'Message text',
+  })
+  messageText: string;
+}

@@ -91,6 +91,9 @@ type Conversation {
   """Type Conversation"""
   type: String!
 
+  """Conversation of Bot"""
+  isBot: Boolean!
+
   """Creator ID"""
   creatorId: String!
 
@@ -112,6 +115,39 @@ type ChatMessage {
 
   """Response status code"""
   statusCode: Int!
+}
+
+type MessageData {
+  """Message ID"""
+  id: String!
+
+  """Message text"""
+  message: String!
+
+  """Status"""
+  messageStatus: MessageStatus!
+
+  """Sender ID"""
+  senderId: String!
+
+  """Conversation ID"""
+  conversationId: String!
+
+  """Created at"""
+  createdAt: DateTime!
+
+  """Updated at"""
+  updatedAt: DateTime
+
+  """Deleted at"""
+  deletedAt: DateTime
+}
+
+"""The basic status of Message"""
+enum MessageStatus {
+  SENDING
+  SEND
+  FAILED
 }
 
 type ChatbotConversation {
@@ -142,11 +178,49 @@ type ChatBotMessage {
   statusCode: Int!
 }
 
+type MessageChatBotData {
+  """Message ID"""
+  id: String!
+
+  """Message text"""
+  message: String!
+
+  """Message text"""
+  chatBotMessage: String!
+
+  """Status"""
+  messageStatus: MessageStatus!
+
+  """Sender ID"""
+  senderId: String!
+
+  """Conversation ID"""
+  conversationId: String!
+
+  """Created at"""
+  createdAt: DateTime!
+
+  """Updated at"""
+  updatedAt: DateTime
+
+  """Deleted at"""
+  deletedAt: DateTime
+}
+
+type AIMessage {
+  """Status"""
+  status: String!
+
+  """AI Message"""
+  message: String!
+}
+
 type Query {
   githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
   conversation: [ChatbotConversation!]!
+  messages(conversationID: String!): [MessageChatBotData!]!
 }
 
 input GitHubCode {
@@ -161,7 +235,10 @@ type Mutation {
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
   createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
   createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
+  createMessage(createMessageInput: CreateMessageInput!): MessageData!
   createChatBotConversation(chatbotConversationInput: ChatbotConversationInput!): ChatBotMessage!
+  createChatBotMessage(createChatBotMessageInput: CreateChatBotMessageInput!): MessageChatBotData!
+  queryChatbot(humanMessage: HumanMessage!): AIMessage!
 }
 
 input CreateLoginAuthInput {
@@ -213,6 +290,9 @@ input PrivateConversationInput {
   """Title of Conversation Private"""
   title: String
 
+  """Is Bot"""
+  isBot: Boolean
+
   """Participation user ID"""
   participationUserId: String!
 }
@@ -225,10 +305,31 @@ input GroupConversationInput {
   participationUserId: [String!]!
 }
 
+input CreateMessageInput {
+  """Conversation ID"""
+  conversationId: String!
+
+  """Message text"""
+  messageText: String!
+}
+
 input ChatbotConversationInput {
   """Title of Conversation Chatbot"""
   title: String
 
   """Participation user ID"""
   participationUserId: String!
+}
+
+input CreateChatBotMessageInput {
+  """Conversation ID"""
+  conversationId: String!
+
+  """Message text"""
+  messageText: String!
+}
+
+input HumanMessage {
+  """Message of Conversation Chatbot"""
+  message: String
 }

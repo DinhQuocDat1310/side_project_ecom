@@ -12,6 +12,7 @@ import { SocketModule } from './socket/socket.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ChatModule } from './chat/chat.module';
 import { ChatBotModule } from './chatbot/chat-bot.module';
+import { LangchainModule } from './langchain/langchain.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ChatBotModule } from './chatbot/chat-bot.module';
     SocketModule,
     EventEmitterModule.forRoot({}),
     ChatModule,
-    ChatBotModule
+    ChatBotModule,
+    LangchainModule
   ],
   controllers: [],
   providers: [PrismaService],

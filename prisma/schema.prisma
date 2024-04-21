@@ -119,6 +119,7 @@ model Participant {
 model Message {
   id                String              @id @default(auto()) @map("_id") @db.ObjectId
   message           String
+  chatBotMessage    String?
   messageStatus     MessageStatus       @default(SENDING)
   updatedAt         DateTime            @updatedAt
   createdAt         DateTime            @default(now())
