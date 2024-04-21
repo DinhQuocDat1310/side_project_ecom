@@ -239,6 +239,7 @@ type Mutation {
   createChatBotConversation(chatbotConversationInput: ChatbotConversationInput!): ChatBotMessage!
   createChatBotMessage(createChatBotMessageInput: CreateChatBotMessageInput!): MessageChatBotData!
   queryChatbot(humanMessage: HumanMessage!): AIMessage!
+  createContentForVectorStore(humanMessage: HumanMessage!): String!
 }
 
 input CreateLoginAuthInput {

@@ -15,53 +15,38 @@ import { HumanMessage } from './dto/langchain.input';
 
 // mock vectore embedding data
 interface Document<T> {
-  id: string; // Assuming each document has a unique identifier of type string
   title: string; // Assuming each document has a title of type string
   pageContent: string; // The content of the document, which could be of any type
-  metadata: [];
+  metadata: {};
 }
-const documents: Document<Record<string, any>>[] = [
-  {
-    id: '1',
-    title: 'Document 1',
-    pageContent: 'Test data 41.1',
-    metadata: [],
-  },
-  {
-    id: '2',
-    title: 'Document 2',
-    pageContent: 'Test data 47.1',
-    metadata: [],
-  },
-  // Add more documents as needed
-];
-// process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-const client = new MongoClient(process.env.DATABASE_URL);
-
-// model chatgpt
-const llm = new OpenAIEmbeddings();
 
 @Injectable()
 export class LangchainService {
   retriever: any;
+  client: MongoClient;
+  llm: OpenAIEmbeddings;
 
   constructor() {
-    // this.retriever = this.getVectoreStore()
+    this.client = new MongoClient(process.env.DATABASE_URL || '');
+    this.llm = new OpenAIEmbeddings();
+    this.getVectoreStore();
+    
   }
+ 
   async getVectoreStore() {
-    const client = new MongoClient(process.env.DATABASE_URL || '');
     const namespace = 'ecommerce_nest.vector_store_message';
     const [dbName, collectionName] = namespace.split('.');
-    const collection = client.db(dbName).collection(collectionName);
+    const collection = this.client.db(dbName).collection(collectionName);
 
-    const vectorStore = new MongoDBAtlasVectorSearch(llm, {
+    const vectorStore = new MongoDBAtlasVectorSearch(this.llm, {
       collection,
       indexName: 'vector_index',
       textKey: 'message',
     });
-    return vectorStore.asRetriever();
+    this.retriever = vectorStore.asRetriever();
   }
+
   async query(humanMessage: HumanMessage): Promise<AIMessage> {
     const message = await this.vector_search(humanMessage.message);
     return {
@@ -69,30 +54,38 @@ export class LangchainService {
       status: MessageStatus.SEND,
     };
   }
-  // async create() {
-  //   try {
-  //     const database = client.db('ecommerce_nest');
-  //     const collection = database.collection('vector_store_message');
-  //     const dbConfig = {
-  //       collection: collection,
-  //       indexName: 'vector_index', // The name of the Atlas search index to use.
-  //       textKey: 'message', // Field name for the raw text content. Defaults to "text".
-  //       embeddingKey: 'embedding', // Field name for the vector embeddings. Defaults to "embedding".
-  //     };
-
-  //     const vectorStore = await MongoDBAtlasVectorSearch.fromDocuments(
-  //       documents,
-  //       llm,
-  //       dbConfig,
-  //     );
-  //   } finally {
-  //     // Ensure that the client will close when you finish/error
-  //     await client.close();
-  //   }
-  // }
+  async create(humanMessage: HumanMessage) : Promise<string>{
+    try {
+      const database = this.client.db('ecommerce_nest');
+      const collection = database.collection('vector_store_message');
+      const dbConfig = {
+        collection: collection,
+        indexName: 'vector_index',
+        textKey: 'message',
+      };
+      const documents: Document<Record<string, any>>[] = [
+        {
+          pageContent: humanMessage.message,
+          metadata: {
+            source: "Cotchi",
+          },
+          title: 'Test title'
+        },
+      ];
+      const vectorStore = await MongoDBAtlasVectorSearch.fromDocuments(
+        documents,
+        this.llm,
+        dbConfig,
+      );
+      return "OK"
+    } finally {
+      // Ensure that the client will close when you finish/error
+      await this.client.close();
+    }
+  }
   async vector_search(humanMessage: string): Promise<string> {
     try {
-      const retriever = await this.getVectoreStore();
+      const retriever = this.retriever;
       const prompt =
         PromptTemplate.fromTemplate(`Answer the question based on the following context:
       {context}
@@ -114,7 +107,7 @@ export class LangchainService {
       console.log('Answer: ' + answer);
       return answer;
     } finally {
-      await client.close();
+      await this.client.close();
     }
   }
 }

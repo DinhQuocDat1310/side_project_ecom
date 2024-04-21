@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
 import { AIMessage } from './entities/langchain.entity';
 import { HumanMessage } from './dto/langchain.input';
+import { string } from 'cohere-ai/core/schemas';
 
 @Resolver()
 @UseGuards(AccessJwtAuthGuard)
@@ -19,5 +20,10 @@ export class LangchainResolver {
         humanMessage,
       );
     }
-
+    @Mutation(() => String)
+    async createContentForVectorStore( @Args('humanMessage')
+    humanMessage: HumanMessage,
+    ) : Promise<string> {
+      return await this.langchainService.create(humanMessage);
+    }
 }
