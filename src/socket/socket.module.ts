@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { ChatService } from 'src/chat/chat.service';
+import { LangchainService } from 'src/langchain/langchain.service';
 
 @Module({
   providers: [
@@ -18,6 +19,7 @@ import { ChatService } from 'src/chat/chat.service';
     JwtService,
     UserService,
     ChatService,
+    LangchainService,
   ],
 })
 export class SocketModule {}

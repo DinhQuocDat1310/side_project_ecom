@@ -7,5 +7,4 @@ export class AIMessage {
   status: string;
   @Field(() => String, { description: 'AI Message' })
   message: string;
-
 }

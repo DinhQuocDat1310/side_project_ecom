@@ -33,6 +33,8 @@ export class MessageData {
   id: string;
   @Field(() => String, { description: 'Message text' })
   message: string;
+  @Field(() => String, { description: 'Message chatbot' })
+  chatBotMessage: string;
   @Field(() => MessageStatus, { description: 'Status' })
   messageStatus: MessageStatus;
   @Field(() => String, { description: 'Sender ID' })

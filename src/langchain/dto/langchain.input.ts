@@ -7,5 +7,4 @@ export class HumanMessage {
     description: 'Message of Conversation Chatbot',
   })
   message: string;
- 
 }

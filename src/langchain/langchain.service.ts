@@ -20,7 +20,6 @@ interface Document<T> {
   metadata: {};
 }
 
-
 @Injectable()
 export class LangchainService {
   retriever: any;
@@ -31,9 +30,8 @@ export class LangchainService {
     this.client = new MongoClient(process.env.DATABASE_URL || '');
     this.llm = new OpenAIEmbeddings();
     this.getVectoreStore();
-    
   }
- 
+
   async getVectoreStore() {
     const namespace = 'ecommerce_nest.vector_store_message';
     const [dbName, collectionName] = namespace.split('.');
@@ -54,7 +52,8 @@ export class LangchainService {
       status: MessageStatus.SEND,
     };
   }
-  async create(humanMessage: HumanMessage) : Promise<string>{
+
+  async create(humanMessage: HumanMessage): Promise<string> {
     try {
       const database = this.client.db('ecommerce_nest');
       const collection = database.collection('vector_store_message');
@@ -67,9 +66,9 @@ export class LangchainService {
         {
           pageContent: humanMessage.message,
           metadata: {
-            source: "Cotchi",
+            source: 'Cotchi',
           },
-          title: 'Test title'
+          title: 'Test title',
         },
       ];
       const vectorStore = await MongoDBAtlasVectorSearch.fromDocuments(
@@ -77,12 +76,13 @@ export class LangchainService {
         this.llm,
         dbConfig,
       );
-      return "OK"
+      return 'OK';
     } finally {
       // Ensure that the client will close when you finish/error
       await this.client.close();
     }
   }
+
   async vector_search(humanMessage: string): Promise<string> {
     try {
       const retriever = this.retriever;

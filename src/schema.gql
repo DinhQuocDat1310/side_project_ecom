@@ -3,41 +3,65 @@
 # ------------------------------------------------------
 
 type User {
-  """Id"""
+  """
+  Id
+  """
   id: String!
 
-  """Username"""
+  """
+  Username
+  """
   username: String!
 
-  """Email"""
+  """
+  Email
+  """
   email: String!
 
-  """Password"""
+  """
+  Password
+  """
   password: String!
 
-  """Phone number"""
+  """
+  Phone number
+  """
   phoneNumber: String!
 
-  """Address"""
+  """
+  Address
+  """
   address: String!
 
-  """Role"""
+  """
+  Role
+  """
   role: Role!
 
-  """Gender"""
+  """
+  Gender
+  """
   gender: Gender!
 
-  """Date of birth"""
+  """
+  Date of birth
+  """
   dateOfBirth: String!
 
-  """Avatar"""
+  """
+  Avatar
+  """
   avatar: String!
 
-  """Provider"""
+  """
+  Provider
+  """
   provider: String!
 }
 
-"""The basic roles of User"""
+"""
+The basic roles of User
+"""
 enum Role {
   ADMIN
   MANAGER
@@ -45,7 +69,9 @@ enum Role {
   PURCHASER
 }
 
-"""The basic genders of User"""
+"""
+The basic genders of User
+"""
 enum Gender {
   MALE
   FEMALE
@@ -53,54 +79,82 @@ enum Gender {
 }
 
 type AuthToken {
-  """Access Token"""
+  """
+  Access Token
+  """
   accessToken: String!
 
-  """Refresh Token"""
+  """
+  Refresh Token
+  """
   refreshToken: String!
 }
 
 type AuthAccessToken {
-  """Access Token"""
+  """
+  Access Token
+  """
   accessToken: String!
 }
 
 type AuthMessage {
-  """Response message send OTP email"""
+  """
+  Response message send OTP email
+  """
   message: String!
 
-  """Response status code"""
+  """
+  Response status code
+  """
   statusCode: Int!
 }
 
 type SendOTPEmail {
-  """Response message send OTP email"""
+  """
+  Response message send OTP email
+  """
   message: String!
 
-  """Response status code"""
+  """
+  Response status code
+  """
   statusCode: Int!
 }
 
 type Conversation {
-  """Private Conversation ID"""
+  """
+  Private Conversation ID
+  """
   id: String!
 
-  """Title"""
+  """
+  Title
+  """
   title: String!
 
-  """Type Conversation"""
+  """
+  Type Conversation
+  """
   type: String!
 
-  """Conversation of Bot"""
+  """
+  Conversation of Bot
+  """
   isBot: Boolean!
 
-  """Creator ID"""
+  """
+  Creator ID
+  """
   creatorId: String!
 
-  """Created at"""
+  """
+  Created at
+  """
   createdAt: DateTime!
 
-  """Updated at"""
+  """
+  Updated at
+  """
   updatedAt: DateTime!
 }
 
@@ -110,108 +164,82 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type ChatMessage {
-  """Response message chat"""
+  """
+  Response message chat
+  """
   message: String!
 
-  """Response status code"""
+  """
+  Response status code
+  """
   statusCode: Int!
 }
 
 type MessageData {
-  """Message ID"""
+  """
+  Message ID
+  """
   id: String!
 
-  """Message text"""
+  """
+  Message text
+  """
   message: String!
 
-  """Status"""
+  """
+  Message chatbot
+  """
+  chatBotMessage: String!
+
+  """
+  Status
+  """
   messageStatus: MessageStatus!
 
-  """Sender ID"""
+  """
+  Sender ID
+  """
   senderId: String!
 
-  """Conversation ID"""
+  """
+  Conversation ID
+  """
   conversationId: String!
 
-  """Created at"""
+  """
+  Created at
+  """
   createdAt: DateTime!
 
-  """Updated at"""
+  """
+  Updated at
+  """
   updatedAt: DateTime
 
-  """Deleted at"""
+  """
+  Deleted at
+  """
   deletedAt: DateTime
 }
 
-"""The basic status of Message"""
+"""
+The basic status of Message
+"""
 enum MessageStatus {
   SENDING
   SEND
   FAILED
 }
 
-type ChatbotConversation {
-  """Chatbot Conversation ID"""
-  id: String!
-
-  """Title"""
-  title: String!
-
-  """Type Conversation"""
-  type: String!
-
-  """Creator ID"""
-  creatorId: String!
-
-  """Created at"""
-  createdAt: DateTime!
-
-  """Updated at"""
-  updatedAt: DateTime!
-}
-
-type ChatBotMessage {
-  """Response message chat"""
-  message: String!
-
-  """Response status code"""
-  statusCode: Int!
-}
-
-type MessageChatBotData {
-  """Message ID"""
-  id: String!
-
-  """Message text"""
-  message: String!
-
-  """Message text"""
-  chatBotMessage: String!
-
-  """Status"""
-  messageStatus: MessageStatus!
-
-  """Sender ID"""
-  senderId: String!
-
-  """Conversation ID"""
-  conversationId: String!
-
-  """Created at"""
-  createdAt: DateTime!
-
-  """Updated at"""
-  updatedAt: DateTime
-
-  """Deleted at"""
-  deletedAt: DateTime
-}
-
 type AIMessage {
-  """Status"""
+  """
+  Status
+  """
   status: String!
 
-  """AI Message"""
+  """
+  AI Message
+  """
   message: String!
 }
 
@@ -219,8 +247,8 @@ type Query {
   githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
-  conversation: [ChatbotConversation!]!
-  messages(conversationID: String!): [MessageChatBotData!]!
+  conversation: [Conversation!]!
+  messages(conversationID: String!): [MessageData!]!
 }
 
 input GitHubCode {
@@ -233,104 +261,132 @@ type Mutation {
   refreshToken: AuthAccessToken!
   createUser(createUserInput: CreateUserInput!): User!
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
-  createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
-  createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
+  createPrivateConversation(
+    privateConversationInput: PrivateConversationInput!
+  ): ChatMessage!
+  createGroupConversation(
+    groupConversationInput: GroupConversationInput!
+  ): ChatMessage!
   createMessage(createMessageInput: CreateMessageInput!): MessageData!
-  createChatBotConversation(chatbotConversationInput: ChatbotConversationInput!): ChatBotMessage!
-  createChatBotMessage(createChatBotMessageInput: CreateChatBotMessageInput!): MessageChatBotData!
   queryChatbot(humanMessage: HumanMessage!): AIMessage!
   createContentForVectorStore(humanMessage: HumanMessage!): String!
 }
 
 input CreateLoginAuthInput {
-  """Username"""
+  """
+  Username
+  """
   username: String!
 
-  """Password"""
+  """
+  Password
+  """
   password: String!
 }
 
 input CreateUserInput {
-  """Username"""
+  """
+  Username
+  """
   username: String!
 
-  """Email"""
+  """
+  Email
+  """
   email: String!
 
-  """Password"""
+  """
+  Password
+  """
   password: String!
 
-  """Phone number"""
+  """
+  Phone number
+  """
   phoneNumber: String!
 
-  """Address"""
+  """
+  Address
+  """
   address: String!
 
-  """Role"""
+  """
+  Role
+  """
   role: Role!
 
-  """Gender"""
+  """
+  Gender
+  """
   gender: Gender!
 
-  """Date of birth"""
+  """
+  Date of birth
+  """
   dateOfBirth: String!
 
-  """Avatar"""
+  """
+  Avatar
+  """
   avatar: String!
 
-  """Provider"""
+  """
+  Provider
+  """
   provider: String!
 }
 
 input VerifyOTPInput {
-  """OTP Input"""
+  """
+  OTP Input
+  """
   otp: String!
 }
 
 input PrivateConversationInput {
-  """Title of Conversation Private"""
+  """
+  Title of Conversation Private
+  """
   title: String
 
-  """Is Bot"""
+  """
+  Is Bot
+  """
   isBot: Boolean
 
-  """Participation user ID"""
+  """
+  Participation user ID
+  """
   participationUserId: String!
 }
 
 input GroupConversationInput {
-  """Title of Conversation Group"""
+  """
+  Title of Conversation Group
+  """
   title: String
 
-  """Participation user ID"""
+  """
+  Participation user ID
+  """
   participationUserId: [String!]!
 }
 
 input CreateMessageInput {
-  """Conversation ID"""
+  """
+  Conversation ID
+  """
   conversationId: String!
 
-  """Message text"""
-  messageText: String!
-}
-
-input ChatbotConversationInput {
-  """Title of Conversation Chatbot"""
-  title: String
-
-  """Participation user ID"""
-  participationUserId: String!
-}
-
-input CreateChatBotMessageInput {
-  """Conversation ID"""
-  conversationId: String!
-
-  """Message text"""
+  """
+  Message text
+  """
   messageText: String!
 }
 
 input HumanMessage {
-  """Message of Conversation Chatbot"""
+  """
+  Message of Conversation Chatbot
+  """
   message: String
 }

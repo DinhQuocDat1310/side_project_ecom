@@ -20,12 +20,14 @@ import {
 } from '@prisma/client';
 import { ChatMessage, MessageData } from './entities/chat.entity';
 import mongoose from 'mongoose';
+import { LangchainService } from 'src/langchain/langchain.service';
 
 @Injectable()
 export class ChatService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly userService: UserService,
+    private readonly langchainService: LangchainService,
   ) {}
 
   createPrivateConversation = async (
@@ -51,23 +53,27 @@ export class ChatService {
         `Your conversation with ${userExisted.username} is already established`,
       );
     try {
-      const conversation = await this.prismaService.conversation.create({
-        data: {
-          title:
-            title ??
-            `Private conversation of ${user.username} and ${userExisted.username}`,
-          creatorId: user.id,
-          type: TypeConversation.PRIVATE,
-          participant: {
-            create: {
-              participant: {
-                create: {
-                  userId: participationUserId,
-                },
+      const data = {
+        title:
+          title ??
+          `Private conversation of ${user.username} and ${userExisted.username}`,
+        creatorId: user.id,
+        type: TypeConversation.PRIVATE,
+        participant: {
+          create: {
+            participant: {
+              create: {
+                userId: participationUserId,
               },
             },
           },
         },
+      };
+      privateConversationInput.isBot
+        ? (data['isBot'] = true)
+        : (data['isBot'] = false);
+      const conversation = await this.prismaService.conversation.create({
+        data,
       });
       if (conversation)
         return {
@@ -278,6 +284,10 @@ export class ChatService {
     const { messageText, conversationId } = createMessageInput;
     await this.checkAllConversationExisted(user.id, conversationId);
 
+    const res = await this.langchainService.query({
+      message: messageText,
+    });
+    const chatBotMessage = res.message;
     try {
       const message = await this.prismaService.$transaction(
         async (prisma: PrismaService) => {
@@ -289,6 +299,7 @@ export class ChatService {
                 },
               },
               message: messageText,
+              chatBotMessage: chatBotMessage ?? null,
               messageStatus: MessageStatus.SEND,
               conversation: {
                 connect: {
@@ -299,6 +310,7 @@ export class ChatService {
             select: {
               id: true,
               message: true,
+              chatBotMessage: true,
               messageStatus: true,
               senderId: true,
               conversationId: true,
