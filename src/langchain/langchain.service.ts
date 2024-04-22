@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { MongoClient } from 'mongodb';
 import { MongoDBAtlasVectorSearch } from '@langchain/mongodb';
@@ -27,19 +27,29 @@ export class LangchainService {
   llm: OpenAIEmbeddings;
 
   constructor() {
-    this.client = new MongoClient(process.env.DATABASE_URL || '');
     this.llm = new OpenAIEmbeddings();
-    this.getVectoreStore();
+    this.connectToDatabase();
+  }
+
+  async connectToDatabase() {
+    try {
+      this.client = new MongoClient(process.env.DATABASE_URL || '');
+      await this.client.connect();
+      this.getVectoreStore();
+    } catch (error) {
+      console.error('Error connecting to the database:', error);
+      throw error;
+    }
   }
 
   async getVectoreStore() {
-    const namespace = 'ecommerce_nest.vector_store_message';
+    const namespace = 'ecom-app.Message';
     const [dbName, collectionName] = namespace.split('.');
     const collection = this.client.db(dbName).collection(collectionName);
 
     const vectorStore = new MongoDBAtlasVectorSearch(this.llm, {
       collection,
-      indexName: 'vector_index',
+      indexName: 'vector_store_message',
       textKey: 'message',
     });
     this.retriever = vectorStore.asRetriever();
@@ -55,11 +65,11 @@ export class LangchainService {
 
   async create(humanMessage: HumanMessage): Promise<string> {
     try {
-      const database = this.client.db('ecommerce_nest');
-      const collection = database.collection('vector_store_message');
+      const database = this.client.db('ecom-app');
+      const collection = database.collection('Message');
       const dbConfig = {
         collection: collection,
-        indexName: 'vector_index',
+        indexName: 'vector_store_message',
         textKey: 'message',
       };
       const documents: Document<Record<string, any>>[] = [
@@ -71,7 +81,7 @@ export class LangchainService {
           title: 'Test title',
         },
       ];
-      const vectorStore = await MongoDBAtlasVectorSearch.fromDocuments(
+      await MongoDBAtlasVectorSearch.fromDocuments(
         documents,
         this.llm,
         dbConfig,
@@ -83,7 +93,7 @@ export class LangchainService {
     }
   }
 
-  async vector_search(humanMessage: string): Promise<string> {
+  async vector_search(humanMessage: string): Promise<any> {
     try {
       const retriever = this.retriever;
       const prompt =
@@ -100,13 +110,9 @@ export class LangchainService {
         model,
         new StringOutputParser(),
       ]);
-
       const question = humanMessage;
-      const answer = await chain.invoke(question);
-      console.log('Question: ' + question);
-      console.log('Answer: ' + answer);
-      return answer;
-    } finally {
+      return await chain.invoke(question);
+    } catch (error) {
       await this.client.close();
     }
   }
