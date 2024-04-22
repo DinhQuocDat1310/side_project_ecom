@@ -360,4 +360,12 @@ export class ChatService {
       return messages;
     }
   };
+
+  getConversationByID = async (id: string): Promise<Conversation> => {
+    return await this.prismaService.conversation.findFirst({
+      where: {
+        id,
+      },
+    });
+  };
 }
