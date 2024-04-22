@@ -4,6 +4,7 @@ import { ChatResolver } from './chat.resolver';
 import { PrismaService } from 'src/prisma/service';
 import { UserService } from 'src/user/user.service';
 import { LangchainService } from 'src/langchain/langchain.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { LangchainService } from 'src/langchain/langchain.service';
     PrismaService,
     UserService,
     LangchainService,
+    ConfigService,
   ],
 })
 export class ChatModule {}

@@ -1,4 +1,4 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { MongoClient } from 'mongodb';
 import { MongoDBAtlasVectorSearch } from '@langchain/mongodb';
@@ -12,6 +12,7 @@ import {
 import { AIMessage } from './entities/langchain.entity';
 import { MessageStatus } from '@prisma/client';
 import { HumanMessage } from './dto/langchain.input';
+import { ConfigService } from '@nestjs/config';
 
 // mock vectore embedding data
 interface Document<T> {
@@ -26,14 +27,16 @@ export class LangchainService {
   client: MongoClient;
   llm: OpenAIEmbeddings;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
   }
 
   async connectToDatabase() {
     try {
-      this.client = new MongoClient(process.env.DATABASE_URL || '');
+      this.client = new MongoClient(
+        this.configService.get('DATABASE_URL') || '',
+      );
       await this.client.connect();
       this.getVectoreStore();
     } catch (error) {
@@ -43,13 +46,13 @@ export class LangchainService {
   }
 
   async getVectoreStore() {
-    const namespace = 'ecom-app.Message';
+    const namespace = this.configService.get('NAMESPACE_VECTOR');
     const [dbName, collectionName] = namespace.split('.');
     const collection = this.client.db(dbName).collection(collectionName);
 
     const vectorStore = new MongoDBAtlasVectorSearch(this.llm, {
       collection,
-      indexName: 'vector_store_message',
+      indexName: this.configService.get('INDEXES_VECTOR_NAME'),
       textKey: 'message',
     });
     this.retriever = vectorStore.asRetriever();
@@ -65,11 +68,15 @@ export class LangchainService {
 
   async create(humanMessage: HumanMessage): Promise<string> {
     try {
-      const database = this.client.db('ecom-app');
-      const collection = database.collection('Message');
+      const database = this.client.db(
+        this.configService.get('DATABASE_VECTOR_NAME'),
+      );
+      const collection = database.collection(
+        this.configService.get('COLLECTION_VECTOR_NAME'),
+      );
       const dbConfig = {
         collection: collection,
-        indexName: 'vector_store_message',
+        indexName: this.configService.get('INDEXES_VECTOR_NAME'),
         textKey: 'message',
       };
       const documents: Document<Record<string, any>>[] = [
