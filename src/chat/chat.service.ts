@@ -394,6 +394,10 @@ export class ChatService {
       });
       return 'OK';
     } catch (error) {
+      await this.prismaService.user.update({
+        where: { id: user.id },
+        data: { isAccessChatbot: false },
+      });
       throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
     }
   }
