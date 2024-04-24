@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -21,6 +22,7 @@ import {
 import { ChatMessage, MessageData } from './entities/chat.entity';
 import mongoose from 'mongoose';
 import { LangchainService } from 'src/langchain/langchain.service';
+import axios from 'axios';
 
 @Injectable()
 export class ChatService {
@@ -287,6 +289,7 @@ export class ChatService {
     const res = await this.langchainService.query({
       message: messageText,
     });
+    // const res = { message: '' };
     const chatBotMessage = res.message;
     try {
       const message = await this.prismaService.$transaction(
@@ -369,6 +372,7 @@ export class ChatService {
           conversationId: conversation.id,
         },
       });
+      console.log(messages)
       return messages;
     }
   };
@@ -380,4 +384,45 @@ export class ChatService {
       },
     });
   };
+  updateAccessChatbot = async ( user: UserSignIn,openAIKey: string): Promise<string> =>  {
+    try {
+    
+      const res = await this.checkOpenAIKey(openAIKey);
+      await this.prismaService.user.update({
+        where: { id: user.id },
+        data: { isAccessChatbot: true },
+      });
+      return 'OK';
+    } catch (error) {
+      throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
+    }
+  }
+  async checkOpenAIKey(apiKey: string): Promise<void> {
+    try {
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Hello!"
+          }
+        ]
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        }
+      });
+
+      if (response.status !== 200) {
+        throw new Error('Invalid response from OpenAI');
+      }
+    } catch (error) {
+      throw new Error('Invalid OpenAI key');
+    }
+  }
 }

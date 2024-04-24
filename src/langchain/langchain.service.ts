@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { MongoClient } from 'mongodb';
 import { MongoDBAtlasVectorSearch } from '@langchain/mongodb';
@@ -120,6 +120,7 @@ export class LangchainService {
       const question = humanMessage;
       return await chain.invoke(question);
     } catch (error) {
+      throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
       await this.client.close();
     }
   }

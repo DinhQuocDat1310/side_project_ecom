@@ -180,6 +180,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
   createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
+  updateAccessChatbot(openAIKey: String!): String!
   createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
   createMessage(createMessageInput: CreateMessageInput!): MessageData!
   queryChatbot(humanMessage: HumanMessage!): AIMessage!

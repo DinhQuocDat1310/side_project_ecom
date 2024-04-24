@@ -34,6 +34,7 @@ model User {
   participant         Participant[]
   message             Message[]
   deletedConversation DeletedConversation[]
+  isAccessChatbot     Boolean                     @default(false)
 }
 
 enum Role {
