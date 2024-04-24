@@ -19,6 +19,7 @@ import {
 import { UserSignIn } from './dto/auth';
 import fetch from 'node-fetch';
 import { Gender, Role } from '@prisma/client';
+import { LangchainService } from 'src/langchain/langchain.service';
 
 @Injectable()
 export class AuthService {

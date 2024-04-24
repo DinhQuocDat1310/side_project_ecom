@@ -28,11 +28,14 @@ export class LangchainService {
   client: MongoClient;
   llm: OpenAIEmbeddings;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+
+  ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
+    
   }
-
   async connectToDatabase() {
     try {
       this.client = new MongoClient(
@@ -69,6 +72,7 @@ export class LangchainService {
 
   async create(humanMessage: HumanMessage): Promise<string> {
     try {
+      
       const database = this.client.db(
         this.configService.get('DATABASE_VECTOR_NAME'),
       );
@@ -122,7 +126,9 @@ export class LangchainService {
       return await chain.invoke(question);
     } catch (error) {
       await this.client.close();
-      throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
+      throw new ForbiddenException(
+        'Something wrong with the OpenAI key, please try again.',
+      );
     }
   }
 }
