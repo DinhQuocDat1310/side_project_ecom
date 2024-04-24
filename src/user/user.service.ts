@@ -111,7 +111,6 @@ export class UserService {
         return user;
       }
       if (user && !password && user.provider === GOOGLE_PROVIDER) return user;
-      
       return null;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -157,9 +156,19 @@ export class UserService {
     return await this.prismaService.user.findMany({});
   };
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  getUserByID = async (id: string): Promise<User> => {
+    try {
+      const user: User = await this.prismaService.user.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (user) return user;
+      return null;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  };
 
   update(id: number, updateUserInput: UpdateUserInput) {
     return `This action updates a #${id} user`;

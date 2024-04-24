@@ -8,6 +8,10 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { SalesmanModule } from './salesman/salesman.module';
 import { EmailModule } from './email/email.module';
+import { SocketModule } from './socket/socket.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ChatModule } from './chat/chat.module';
+import { LangchainModule } from './langchain/langchain.module';
 
 @Module({
   imports: [
@@ -22,6 +26,10 @@ import { EmailModule } from './email/email.module';
     UserModule,
     SalesmanModule,
     EmailModule,
+    SocketModule,
+    EventEmitterModule.forRoot({}),
+    ChatModule,
+    LangchainModule,
   ],
   controllers: [],
   providers: [PrismaService],

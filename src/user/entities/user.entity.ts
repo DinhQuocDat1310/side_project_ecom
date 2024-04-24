@@ -3,6 +3,8 @@ import { Gender, Role } from '@prisma/client';
 
 @ObjectType()
 export class User {
+  @Field(() => String, { description: 'Id' })
+  id: string;
   @Field(() => String, { description: 'Username' })
   username?: string;
   @Field(() => String, { description: 'Email' })

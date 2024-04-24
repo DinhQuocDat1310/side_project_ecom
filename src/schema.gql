@@ -3,6 +3,9 @@
 # ------------------------------------------------------
 
 type User {
+  """Id"""
+  id: String!
+
   """Username"""
   username: String!
 
@@ -78,10 +81,92 @@ type SendOTPEmail {
   statusCode: Int!
 }
 
+type Conversation {
+  """Private Conversation ID"""
+  id: String!
+
+  """Title"""
+  title: String!
+
+  """Type Conversation"""
+  type: String!
+
+  """Conversation of Bot"""
+  isBot: Boolean!
+
+  """Creator ID"""
+  creatorId: String!
+
+  """Created at"""
+  createdAt: DateTime!
+
+  """Updated at"""
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ChatMessage {
+  """Response message chat"""
+  message: String!
+
+  """Response status code"""
+  statusCode: Int!
+}
+
+type MessageData {
+  """Message ID"""
+  id: String!
+
+  """Message text"""
+  message: String!
+
+  """Message chatbot"""
+  chatBotMessage: String
+
+  """Status"""
+  messageStatus: MessageStatus!
+
+  """Sender ID"""
+  senderId: String!
+
+  """Conversation ID"""
+  conversationId: String!
+
+  """Created at"""
+  createdAt: DateTime!
+
+  """Updated at"""
+  updatedAt: DateTime
+
+  """Deleted at"""
+  deletedAt: DateTime
+}
+
+"""The basic status of Message"""
+enum MessageStatus {
+  SENDING
+  SEND
+  FAILED
+}
+
+type AIMessage {
+  """Status"""
+  status: String!
+
+  """AI Message"""
+  message: String!
+}
+
 type Query {
   githubLogin(gitHubCode: GitHubCode!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
+  conversation: [Conversation!]!
+  messages(conversationID: String!): [MessageData!]!
 }
 
 input GitHubCode {
@@ -94,6 +179,11 @@ type Mutation {
   refreshToken: AuthAccessToken!
   createUser(createUserInput: CreateUserInput!): User!
   verifyOtp(otpInput: VerifyOTPInput!): SendOTPEmail!
+  createPrivateConversation(privateConversationInput: PrivateConversationInput!): ChatMessage!
+  createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
+  createMessage(createMessageInput: CreateMessageInput!): MessageData!
+  queryChatbot(humanMessage: HumanMessage!): AIMessage!
+  createContentForVectorStore(humanMessage: HumanMessage!): String!
 }
 
 input CreateLoginAuthInput {
@@ -139,4 +229,36 @@ input CreateUserInput {
 input VerifyOTPInput {
   """OTP Input"""
   otp: String!
+}
+
+input PrivateConversationInput {
+  """Title of Conversation Private"""
+  title: String
+
+  """Is Bot"""
+  isBot: Boolean
+
+  """Participation user ID"""
+  participationUserId: String!
+}
+
+input GroupConversationInput {
+  """Title of Conversation Group"""
+  title: String
+
+  """Participation user ID"""
+  participationUserId: [String!]!
+}
+
+input CreateMessageInput {
+  """Conversation ID"""
+  conversationId: String!
+
+  """Message text"""
+  messageText: String!
+}
+
+input HumanMessage {
+  """Message of Conversation Chatbot"""
+  message: String
 }
