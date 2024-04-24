@@ -372,7 +372,6 @@ export class ChatService {
           conversationId: conversation.id,
         },
       });
-      console.log(messages)
       return messages;
     }
   };
@@ -390,7 +389,7 @@ export class ChatService {
       const res = await this.checkOpenAIKey(openAIKey);
       await this.prismaService.user.update({
         where: { id: user.id },
-        data: { isAccessChatbot: true },
+        data: { isAccessChatbot: true , openaikey: openAIKey},
       });
       return 'OK';
     } catch (error) {

@@ -67,7 +67,7 @@ export class ChatResolver {
   }
 
   @Query(() => [MessageData], { name: 'messages' })
-  // @UseGuards(ChatbotGuard)
+  @UseGuards(ChatbotGuard)
   async getAllMessageByConversationID(
     @Context() context: any,
     @Args('conversationID', { type: () => String }) conversationID: string,

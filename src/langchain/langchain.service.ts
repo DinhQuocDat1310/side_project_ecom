@@ -13,6 +13,7 @@ import { AIMessage } from './entities/langchain.entity';
 import { MessageStatus } from '@prisma/client';
 import { HumanMessage } from './dto/langchain.input';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from 'src/user/user.service';
 
 // mock vectore embedding data
 interface Document<T> {
@@ -120,8 +121,8 @@ export class LangchainService {
       const question = humanMessage;
       return await chain.invoke(question);
     } catch (error) {
-      throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
       await this.client.close();
+      throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
     }
   }
 }

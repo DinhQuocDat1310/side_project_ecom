@@ -25,7 +25,7 @@ export class ChatbotGuard implements CanActivate {
     const request2 = ctx.getContext();
     request2.body = ctx.getArgs().createMessageInput;
 
-    if (user.isAccessChatbot === false) {
+    if (user.isAccessChatbot === false || !user.isAccessChatbot) {
       throw new ForbiddenException(
         'Unauthorized access due to missing OpenAI key or chatbot access.',
       );
