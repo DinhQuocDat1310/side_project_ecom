@@ -12,11 +12,18 @@ import { SocketModule } from './socket/socket.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ChatModule } from './chat/chat.module';
 import { LangchainModule } from './langchain/langchain.module';
+import * as redisStore from 'cache-manager-redis-store';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.env'],
+    }),
+    CacheModule.register({
+      store: redisStore,
+      host: 'localhost', //default host
+      port: 6379, //default port
     }),
     AuthModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
