@@ -30,7 +30,6 @@ export class LangchainService {
 
   constructor(
     private readonly configService: ConfigService,
-
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
@@ -42,6 +41,7 @@ export class LangchainService {
         this.configService.get('DATABASE_URL') || '',
       );
       await this.client.connect();
+      console.log("44",process.env['OPENAI_API_KEY'] )
       this.getVectoreStore();
     } catch (error) {
       console.error('Error connecting to the database:', error);
