@@ -383,23 +383,7 @@ export class ChatService {
       },
     });
   };
-  updateAccessChatbot = async ( user: UserSignIn,openAIKey: string): Promise<string> =>  {
-    try {
-    
-      const res = await this.checkOpenAIKey(openAIKey);
-      await this.prismaService.user.update({
-        where: { id: user.id },
-        data: { isAccessChatbot: true , openaikey: openAIKey},
-      });
-      return 'OK';
-    } catch (error) {
-      await this.prismaService.user.update({
-        where: { id: user.id },
-        data: { isAccessChatbot: false },
-      });
-      throw new ForbiddenException('Something wrong with the OpenAI key, please try again.');
-    }
-  }
+
   async checkOpenAIKey(apiKey: string): Promise<void> {
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {

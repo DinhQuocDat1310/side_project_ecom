@@ -27,14 +27,6 @@ export class ChatResolver {
     );
   }
 
-  @Mutation(() => String)
-  async updateAccessChatbot(
-    @Context() context: any,
-    @Args('openAIKey')
-    openAIKey: string,
-  ) : Promise<string> {
-    return await this.chatService.updateAccessChatbot( context.req.user,openAIKey);
-  }
 
   @Query(() => [Conversation], { name: 'conversation' })
   findOne(@Context() context: any) {
