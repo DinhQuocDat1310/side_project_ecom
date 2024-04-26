@@ -22,7 +22,7 @@ registerEnumType(Gender, {
 
 @InputType()
 export class CreateUserInput {
-  @Field(() => String, { description: 'Username' })
+  @Field(() => String,  { description: 'Username' })
   @IsString()
   username?: string;
   @Field(() => String, { description: 'Email' })

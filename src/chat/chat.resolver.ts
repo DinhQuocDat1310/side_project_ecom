@@ -8,6 +8,7 @@ import {
   GroupConversationInput,
   PrivateConversationInput,
 } from './dto/create-chat.input';
+import { ChatbotGuard } from 'src/guard/chatbot.guard';
 
 @Resolver()
 @UseGuards(AccessJwtAuthGuard)
@@ -25,6 +26,7 @@ export class ChatResolver {
       privateConversationInput,
     );
   }
+
 
   @Query(() => [Conversation], { name: 'conversation' })
   findOne(@Context() context: any) {
@@ -44,6 +46,7 @@ export class ChatResolver {
   }
 
   @Mutation(() => MessageData)
+  @UseGuards(ChatbotGuard)
   async createMessage(
     @Context() context: any,
     @Args('createMessageInput')
@@ -56,13 +59,14 @@ export class ChatResolver {
   }
 
   @Query(() => [MessageData], { name: 'messages' })
+  @UseGuards(ChatbotGuard)
   async getAllMessageByConversationID(
     @Context() context: any,
     @Args('conversationID', { type: () => String }) conversationID: string,
   ) {
     return await this.chatService.getAllMessageOfConversationID(
       context.req.user,
-      conversationID,
+       conversationID,
     );
   }
 }
