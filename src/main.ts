@@ -7,7 +7,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:4000','https://javis-f3q7.onrender.com'], // Allow requests from this origin
+    origin: ['http://localhost:3000', 'http://localhost:4000','https://javis-f3q7.onrender.com', process.env.FRONT_DEPLOY], // Allow requests from this origin
     credentials: true, // Allow sending cookies or authentication headers
   });
 
