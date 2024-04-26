@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = process.env.PORT || 10000
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
@@ -11,6 +12,6 @@ async function bootstrap() {
     credentials: true, // Allow sending cookies or authentication headers
   });
 
-    await app.listen(process.env.PORT || 8000); // Use port 8000 if process.env.PORT is not defined
+    await app.listen(port); // Use port 8000 if process.env.PORT is not defined
 }
 bootstrap();
