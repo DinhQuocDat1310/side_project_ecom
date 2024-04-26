@@ -11,6 +11,6 @@ async function bootstrap() {
     credentials: true, // Allow sending cookies or authentication headers
   });
 
-    await app.listen(process.env.PORT || 8000); // Use port 8000 if process.env.PORT is not defined
+    await app.listen(8000); // Use port 8000 if process.env.PORT is not defined
 }
 bootstrap();
