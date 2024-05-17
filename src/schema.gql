@@ -163,6 +163,7 @@ type AIMessage {
 
 type Query {
   githubLogin(gitHubCode: GitHubCode!): AuthToken!
+  googleLogin(googleIDToken: String!): AuthToken!
   user: [User!]!
   emailMessageResponse: [SendOTPEmail!]!
   conversation: [Conversation!]!

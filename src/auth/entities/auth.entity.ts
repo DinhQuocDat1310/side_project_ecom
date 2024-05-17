@@ -8,7 +8,6 @@ export class AuthToken {
   @Field(() => String, { description: 'Refresh Token' })
   refreshToken: string;
 }
-
 @ObjectType()
 export class AuthAccessToken {
   @Field(() => String, { description: 'Access Token' })

@@ -29,6 +29,20 @@ export class AuthResolver {
   githubLogin(@Args('gitHubCode') gitHubCode: GitHubCode) {
     return this.authService.githubLogin(gitHubCode);
   }
+  @Query(() => AuthToken)
+  googleLogin(@Args('googleIDToken') googleIDToken: string) {
+    return this.authService.googleLogin(googleIDToken);
+  }
+  // @Mutation(() => AuthToken)
+  // // @UseGuards(GqlLocalAuthGuard, StatusGuard)
+  // @Status(StatusUser.INIT, StatusUser.VERIFIED)
+  // async googleLogin(
+  //   //Just for args input in Mutation
+  //   @Args('googleIDToken') googleIDToken: string,
+  //   // @Context() context: any,
+  // ) {
+  //   return await this.authService.googleLogin(googleIDToken);
+  // }
 
   @Mutation(() => AuthToken)
   @UseGuards(GqlLocalAuthGuard, StatusGuard)
