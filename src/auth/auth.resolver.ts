@@ -29,7 +29,14 @@ export class AuthResolver {
   githubLogin(@Args('gitHubCode') gitHubCode: GitHubCode) {
     return this.authService.githubLogin(gitHubCode);
   }
-
+  @Query(() => AuthToken)
+  googleLogin(@Args('googleIDToken') googleIDToken: string) {
+    return this.authService.googleLogin(googleIDToken);
+  }
+  @Query(() => AuthToken)
+  facebookLogin(@Args('emailFacebook') emailFacebook: string) {
+    return this.authService.facebookLogin(emailFacebook);
+  }
   @Mutation(() => AuthToken)
   @UseGuards(GqlLocalAuthGuard, StatusGuard)
   @Status(StatusUser.INIT, StatusUser.VERIFIED)
