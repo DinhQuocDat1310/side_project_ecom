@@ -33,17 +33,10 @@ export class AuthResolver {
   googleLogin(@Args('googleIDToken') googleIDToken: string) {
     return this.authService.googleLogin(googleIDToken);
   }
-  // @Mutation(() => AuthToken)
-  // // @UseGuards(GqlLocalAuthGuard, StatusGuard)
-  // @Status(StatusUser.INIT, StatusUser.VERIFIED)
-  // async googleLogin(
-  //   //Just for args input in Mutation
-  //   @Args('googleIDToken') googleIDToken: string,
-  //   // @Context() context: any,
-  // ) {
-  //   return await this.authService.googleLogin(googleIDToken);
-  // }
-
+  @Query(() => AuthToken)
+  facebookLogin(@Args('emailFacebook') emailFacebook: string) {
+    return this.authService.facebookLogin(emailFacebook);
+  }
   @Mutation(() => AuthToken)
   @UseGuards(GqlLocalAuthGuard, StatusGuard)
   @Status(StatusUser.INIT, StatusUser.VERIFIED)

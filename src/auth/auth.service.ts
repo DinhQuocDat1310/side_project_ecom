@@ -137,9 +137,9 @@ export class AuthService {
       }
 
       const userGoogle = decoded;
-      const userName = decoded['name'];
+      //using email as username
+      const userName = decoded['email'];
       const userEmail = decoded['email'];
-
       // defautl password setting
       const password =
         'userGoogle' + decoded['sub'] + decoded['email'] + decoded['name'];
@@ -157,6 +157,56 @@ export class AuthService {
             gender: Gender.MALE,
             dateOfBirth: null,
             avatar: userGoogle['picture'] ?? ' ',
+            provider: 'local',
+          };
+          //
+          const createdUser = await this.userService.create(UserSignIn);
+          delete createdUser.dateOfBirth;
+          const dataLogin = {
+            ...createdUser,
+            dateOfBirth: ' ',
+          };
+          //
+          const tokens = await this.login(dataLogin);
+          return tokens;
+          // login
+        } else {
+          const UserSignIn = user;
+          const tokens = await this.login(UserSignIn);
+          return tokens;
+        }
+    } catch (error) {
+      console.log('something wrong when signing in with googl');
+      console.error('Error:', error.response);
+      throw error;
+    }
+   };
+  facebookLogin = async (emailFacebook: string): Promise<any> => {
+    console.log(emailFacebook, process.env.ACCESS_TOKEN_JWT_SECRET_KEY)
+
+    try {
+
+      // const userGoogle = decoded;
+      //using email as username
+      const userName = emailFacebook;
+      const userEmail = emailFacebook;
+      // defautl password setting
+      const password =
+        'userFacebook' + emailFacebook ;
+      // validate user - null -> create a new user
+      const user = await this.validateUser(userName, password);
+        // create
+      if (user == null) {
+          const UserSignIn = {
+            username: emailFacebook,
+            email: emailFacebook,
+            password:password ,
+            phoneNumber: '',
+            address: '',
+            role: Role.SALESMAN,
+            gender: Gender.MALE,
+            dateOfBirth: null,
+            avatar: ' ',
             provider: 'local',
           };
           //
