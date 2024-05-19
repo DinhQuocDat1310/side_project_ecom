@@ -168,7 +168,7 @@ export class LangchainService {
       const chat = model.startChat({
         history: history,
         generationConfig: {
-          maxOutputTokens: 300,
+          maxOutputTokens: 500,
         },
       });
 
