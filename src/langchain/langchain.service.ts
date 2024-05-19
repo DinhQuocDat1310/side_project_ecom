@@ -205,6 +205,7 @@ export class LangchainService {
 
       return modelResponse;
     } catch (error) {
+      console.log(error)
       await this.client.close();
       throw new ForbiddenException(
         'Something went wrong with the OpenAI key, please try again.',
