@@ -65,7 +65,6 @@ export class LangchainService {
 
   async query(humanMessage: HumanMessage): Promise<AIMessage> {
     const message = await this.vector_search(humanMessage.message);
-    console.log(68,message)
     return {
       message: message,
       status: MessageStatus.SEND,
@@ -133,10 +132,9 @@ export class LangchainService {
       return await chain.invoke(question);
     } catch {
       await this.client.close();
-      // throw new ForbiddenException(
-      //   'Something went wrong with the OpenAI key, please try again.',
-      // );
-      return false
+      throw new ForbiddenException(
+        'Something went wrong with the OpenAI key, please try again.',
+      );
     }
   }
   async vector_search_gemini_model(humanMessage: string): Promise<any> {
