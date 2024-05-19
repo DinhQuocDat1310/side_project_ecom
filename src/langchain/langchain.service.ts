@@ -132,9 +132,10 @@ export class LangchainService {
       return await chain.invoke(question);
     } catch {
       await this.client.close();
-      throw new ForbiddenException(
-        'Something went wrong with the OpenAI key, please try again.',
-      );
+      // throw new ForbiddenException(
+      //   'Something went wrong with the OpenAI key, please try again.',
+      // );
+      return false
     }
   }
   async vector_search_gemini_model(humanMessage: string): Promise<any> {
