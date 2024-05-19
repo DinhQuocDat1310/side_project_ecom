@@ -29,12 +29,13 @@ export class LangchainService {
   client: MongoClient;
   llm: OpenAIEmbeddings;
   genAI: GoogleGenerativeAI;
+
   constructor(
     private readonly configService: ConfigService, // private readonly prismaService: PrismaService, // private readonly userService: UserService,
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI('AIzaSyARIzN7trzwMF86sJQaQdEsiFshfRmjex0');
+    this.genAI = new GoogleGenerativeAI(this.configService.get('GOOGLE_API_KEY'));
   }
   async connectToDatabase() {
     try {
@@ -64,6 +65,7 @@ export class LangchainService {
 
   async query(humanMessage: HumanMessage): Promise<AIMessage> {
     const message = await this.vector_search(humanMessage.message);
+    console.log(68,message)
     return {
       message: message,
       status: MessageStatus.SEND,
@@ -129,8 +131,12 @@ export class LangchainService {
       ]);
       const question = humanMessage;
       return await chain.invoke(question);
-    } finally {
-      return await this.vector_search_gemini_model(humanMessage);
+    } catch {
+      await this.client.close();
+      // throw new ForbiddenException(
+      //   'Something went wrong with the OpenAI key, please try again.',
+      // );
+      return false
     }
   }
   async vector_search_gemini_model(humanMessage: string): Promise<any> {
@@ -199,7 +205,6 @@ export class LangchainService {
 
       return modelResponse;
     } catch (error) {
-      console.log(error)
       await this.client.close();
       throw new ForbiddenException(
         'Something went wrong with the OpenAI key, please try again.',

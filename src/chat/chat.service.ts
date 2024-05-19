@@ -285,17 +285,16 @@ export class ChatService {
   ): Promise<MessageData> => {
     const { messageText, conversationId } = createMessageInput;
     await this.checkAllConversationExisted(user.id, conversationId);
-    console.log(288)
     let res = await this.langchainService.query({
       message: messageText,
     });
-    // console.log(292,res)
+    console.log(res)
     // let resFromGemini = {};
-    // if (!res) {
-    //   res = await this.langchainService.queryGemini({
-    //     message: messageText,
-    //   });
-    // }
+    if (!res.message) {
+      res = await this.langchainService.queryGemini({
+        message: messageText,
+      });
+    }
     // const res = { message: '' };
     const chatBotMessage = res.message;
     try {
