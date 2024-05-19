@@ -288,13 +288,13 @@ export class ChatService {
     let res = await this.langchainService.query({
       message: messageText,
     });
-    console.log(res)
-    // let resFromGemini = {};
-    if (!res.message) {
-      res = await this.langchainService.queryGemini({
-        message: messageText,
-      });
-    }
+    // console.log(res)
+    // // let resFromGemini = {};
+    // if (!res.message) {
+    //   res = await this.langchainService.queryGemini({
+    //     message: messageText,
+    //   });
+    // }
     // const res = { message: '' };
     const chatBotMessage = res.message;
     try {

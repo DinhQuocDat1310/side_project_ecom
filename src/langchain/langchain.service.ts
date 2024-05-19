@@ -35,7 +35,7 @@ export class LangchainService {
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI(this.configService.get('GOOGLE_API_KEY'));
+    this.genAI = new GoogleGenerativeAI('AIzaSyARIzN7trzwMF86sJQaQdEsiFshfRmjex0');
   }
   async connectToDatabase() {
     try {
@@ -65,7 +65,6 @@ export class LangchainService {
 
   async query(humanMessage: HumanMessage): Promise<AIMessage> {
     const message = await this.vector_search(humanMessage.message);
-    console.log(68,message)
     return {
       message: message,
       status: MessageStatus.SEND,
@@ -133,10 +132,9 @@ export class LangchainService {
       return await chain.invoke(question);
     } catch {
       await this.client.close();
-      // throw new ForbiddenException(
-      //   'Something went wrong with the OpenAI key, please try again.',
-      // );
-      return false
+      throw new ForbiddenException(
+        'Something went wrong with the OpenAI key, please try again.',
+      );
     }
   }
   async vector_search_gemini_model(humanMessage: string): Promise<any> {
@@ -205,6 +203,9 @@ export class LangchainService {
 
       return modelResponse;
     } catch (error) {
+      console.log(this.configService.get('GOOGLE_API_KEY'))
+
+      console.log(error)
       await this.client.close();
       throw new ForbiddenException(
         'Something went wrong with the OpenAI key, please try again.',
