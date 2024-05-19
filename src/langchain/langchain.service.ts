@@ -34,7 +34,7 @@ export class LangchainService {
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    this.genAI = new GoogleGenerativeAI('AIzaSyARIzN7trzwMF86sJQaQdEsiFshfRmjex0');
   }
   async connectToDatabase() {
     try {
@@ -199,6 +199,7 @@ export class LangchainService {
 
       return modelResponse;
     } catch (error) {
+      console.log(error)
       await this.client.close();
       throw new ForbiddenException(
         'Something went wrong with the OpenAI key, please try again.',
