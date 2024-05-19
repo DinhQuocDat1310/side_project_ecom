@@ -132,9 +132,9 @@ export class LangchainService {
     } catch (error) {
       console.log(147);
       await this.client.close();
-      throw new ForbiddenException(
-        'Something wrong with the OpenAI key, please try again.',
-      );
+      // throw new ForbiddenException(
+      //   'Something wrong with the OpenAI key, please try again.',
+      // );
     } finally {
       return await this.vector_search_gemini_model(humanMessage);
     }
