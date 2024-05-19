@@ -185,6 +185,7 @@ type Mutation {
   createGroupConversation(groupConversationInput: GroupConversationInput!): ChatMessage!
   createMessage(createMessageInput: CreateMessageInput!): MessageData!
   queryChatbot(humanMessage: HumanMessage!): AIMessage!
+  queryChatbotGemini(humanMessage: HumanMessage!): AIMessage!
   createContentForVectorStore(humanMessage: HumanMessage!): String!
 }
 

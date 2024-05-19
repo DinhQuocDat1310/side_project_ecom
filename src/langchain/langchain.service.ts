@@ -13,7 +13,8 @@ import { AIMessage } from './entities/langchain.entity';
 import { MessageStatus } from '@prisma/client';
 import { HumanMessage } from './dto/langchain.input';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from 'src/user/user.service';
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // mock vectore embedding data
 interface Document<T> {
@@ -27,13 +28,13 @@ export class LangchainService {
   retriever: any;
   client: MongoClient;
   llm: OpenAIEmbeddings;
-
+  genAI: GoogleGenerativeAI;
   constructor(
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService, // private readonly prismaService: PrismaService, // private readonly userService: UserService,
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    
+    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
   }
   async connectToDatabase() {
     try {
@@ -68,10 +69,15 @@ export class LangchainService {
       status: MessageStatus.SEND,
     };
   }
-
+  async queryGemini(humanMessage: HumanMessage): Promise<AIMessage> {
+    const message = await this.vector_search_gemini_model(humanMessage.message);
+    return {
+      message: message,
+      status: MessageStatus.SEND,
+    };
+  }
   async create(humanMessage: HumanMessage): Promise<string> {
     try {
-      
       const database = this.client.db(
         this.configService.get('DATABASE_VECTOR_NAME'),
       );
@@ -124,9 +130,78 @@ export class LangchainService {
       const question = humanMessage;
       return await chain.invoke(question);
     } catch (error) {
+      console.log(147);
       await this.client.close();
       throw new ForbiddenException(
         'Something wrong with the OpenAI key, please try again.',
+      );
+    } finally {
+      return await this.vector_search_gemini_model(humanMessage);
+    }
+  }
+  async vector_search_gemini_model(humanMessage: string): Promise<any> {
+    try {
+      // const retriever = this.retriever;
+
+      // Update user message history with the new message
+      // const newUserMessagse = {
+      //   role: 'user',
+      //   parts: [{ text: humanMessage }],
+      // };
+
+      // Assuming user.message is an array
+      // user.message.push(newUserMessage);
+
+      // await this.prismaService.user.update({
+      //   data: {
+      //     message: user.message,
+      //   },
+      //   where: {
+      //     email: user.email,
+      //   },
+      // });
+      console.log(humanMessage);
+      const history = [];
+      const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+      // Initialize chat with existing history
+      const chat = model.startChat({
+        history: history,
+        generationConfig: {
+          maxOutputTokens: 500,
+        },
+      });
+
+      // Send the new human message
+      const result = await chat.sendMessage(humanMessage);
+      console.log("🚀 ~ LangchainService ~ vector_search_gemini_model ~ result:", result)
+      const response = result.response;
+      console.log("🚀 ~ LangchainService ~ vector_search_gemini_model ~ response:", response)
+      const modelResponse = response.text();
+
+      // Update the message history with the model's response
+      // const newModelMessage = {
+      //   role: 'model',
+      //   parts: [{ text: modelResponse }],
+      // };
+
+      // user.message.push(newModelMessage);
+
+      // await this.prismaService.user.update({
+      //   data: {
+      //     message: user.message,
+      //   },
+      //   where: {
+      //     email: user.email,
+      //   },
+      // });
+      console.log('modelResponse', modelResponse);
+
+      return modelResponse;
+    } catch (error) {
+      await this.client.close();
+      throw new ForbiddenException(
+        'Something went wrong with the OpenAI key, please try again.',
       );
     }
   }
