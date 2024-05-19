@@ -34,7 +34,7 @@ export class LangchainService {
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI(this.configService.get('GOOGLE_API_KEY'));
+    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
   }
   async connectToDatabase() {
     try {
@@ -129,12 +129,6 @@ export class LangchainService {
       ]);
       const question = humanMessage;
       return await chain.invoke(question);
-    } catch (error) {
-      console.log(147);
-      await this.client.close();
-      // throw new ForbiddenException(
-      //   'Something wrong with the OpenAI key, please try again.',
-      // );
     } finally {
       return await this.vector_search_gemini_model(humanMessage);
     }
@@ -174,9 +168,15 @@ export class LangchainService {
 
       // Send the new human message
       const result = await chat.sendMessage(humanMessage);
-      console.log("🚀 ~ LangchainService ~ vector_search_gemini_model ~ result:", result)
+      console.log(
+        '🚀 ~ LangchainService ~ vector_search_gemini_model ~ result:',
+        result,
+      );
       const response = result.response;
-      console.log("🚀 ~ LangchainService ~ vector_search_gemini_model ~ response:", response)
+      console.log(
+        '🚀 ~ LangchainService ~ vector_search_gemini_model ~ response:',
+        response,
+      );
       const modelResponse = response.text();
 
       // Update the message history with the model's response
