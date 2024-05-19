@@ -285,10 +285,17 @@ export class ChatService {
   ): Promise<MessageData> => {
     const { messageText, conversationId } = createMessageInput;
     await this.checkAllConversationExisted(user.id, conversationId);
-
-    const res = await this.langchainService.query({
+    console.log(288)
+    let res = await this.langchainService.query({
       message: messageText,
     });
+    // console.log(292,res)
+    // let resFromGemini = {};
+    // if (!res) {
+    //   res = await this.langchainService.queryGemini({
+    //     message: messageText,
+    //   });
+    // }
     // const res = { message: '' };
     const chatBotMessage = res.message;
     try {
@@ -386,24 +393,28 @@ export class ChatService {
 
   async checkOpenAIKey(apiKey: string): Promise<void> {
     try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        "model": "gpt-3.5-turbo",
-        "messages": [
-          {
-            "role": "system",
-            "content": "You are a helpful assistant."
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful assistant.',
+            },
+            {
+              role: 'user',
+              content: 'Hello!',
+            },
+          ],
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
           },
-          {
-            "role": "user",
-            "content": "Hello!"
-          }
-        ]
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        }
-      });
+        },
+      );
 
       if (response.status !== 200) {
         throw new Error('Invalid response from OpenAI');

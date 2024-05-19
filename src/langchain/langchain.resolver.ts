@@ -4,6 +4,8 @@ import { UseGuards } from '@nestjs/common';
 import { AccessJwtAuthGuard } from 'src/auth/guards/jwt-access-auth.guard';
 import { AIMessage } from './entities/langchain.entity';
 import { HumanMessage } from './dto/langchain.input';
+import { StatusGuard } from 'src/guard/userStatus.guard';
+import { GqlLocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 
 @Resolver()
 @UseGuards(AccessJwtAuthGuard)
@@ -17,7 +19,15 @@ export class LangchainResolver {
   ) {
     return await this.langchainService.query(humanMessage);
   }
-
+  @Mutation(() => AIMessage)
+  @UseGuards()
+  async queryChatbotGemini(
+    @Args('humanMessage')
+    humanMessage: HumanMessage,
+    @Context() context: any,
+  ) {
+    return await this.langchainService.queryGemini(humanMessage);
+  }
   @Mutation(() => String)
   async createContentForVectorStore(
     @Args('humanMessage')

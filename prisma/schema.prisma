@@ -36,6 +36,7 @@ model User {
   deletedConversation DeletedConversation[]
   isAccessChatbot     Boolean                     @default(false)
   openaikey           String?
+  
 }
 
 enum Role {
