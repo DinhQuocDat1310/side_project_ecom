@@ -34,7 +34,7 @@ export class LangchainService {
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    this.genAI = new GoogleGenerativeAI(this.configService.get('GOOGLE_API_KEY'));
   }
   async connectToDatabase() {
     try {
