@@ -35,7 +35,7 @@ export class LangchainService {
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI(this.configService.get('GOOGLE_API_KEY'));
+    this.genAI = new GoogleGenerativeAI('AIzaSyARIzN7trzwMF86sJQaQdEsiFshfRmjex0');
   }
   async connectToDatabase() {
     try {
@@ -205,6 +205,8 @@ export class LangchainService {
 
       return modelResponse;
     } catch (error) {
+      console.log(this.configService.get('GOOGLE_API_KEY'))
+
       console.log(error)
       await this.client.close();
       throw new ForbiddenException(
