@@ -7,6 +7,8 @@ export class AuthToken {
   accessToken: string;
   @Field(() => String, { description: 'Refresh Token' })
   refreshToken: string;
+  @Field(() => String, { nullable: true, description: 'Conversation ID' })
+  conversationId?: string;
 }
 @ObjectType()
 export class AuthAccessToken {

@@ -58,6 +58,9 @@ type AuthToken {
 
   """Refresh Token"""
   refreshToken: String!
+
+  """Conversation ID"""
+  conversationId: String
 }
 
 type AuthAccessToken {
