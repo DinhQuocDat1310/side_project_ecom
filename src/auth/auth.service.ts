@@ -19,8 +19,9 @@ import {
 import { UserSignIn } from './dto/auth';
 import fetch from 'node-fetch';
 import { Gender, Role } from '@prisma/client';
-import { LangchainService } from 'src/langchain/langchain.service';
+// import { LangchainService } from 'src/langchain/langchain.service';
 import { decode } from 'jsonwebtoken';
+import { ChatService } from 'src/chat/chat.service';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly chatService: ChatService,
   ) {}
 
   getGitHubAccessToken = async (gitHubCode: GitHubCode): Promise<any> => {
@@ -126,10 +128,9 @@ export class AuthService {
     }
   };
   googleLogin = async (googleIDToken: string): Promise<any> => {
-    console.log(googleIDToken, process.env.ACCESS_TOKEN_JWT_SECRET_KEY)
+    console.log(googleIDToken, process.env.ACCESS_TOKEN_JWT_SECRET_KEY);
 
     try {
-
       var decoded = decode(googleIDToken);
 
       if (!decoded) {
@@ -145,92 +146,90 @@ export class AuthService {
         'userGoogle' + decoded['sub'] + decoded['email'] + decoded['name'];
       // validate user - null -> create a new user
       const user = await this.validateUser(userName, password);
-        // create
+      // create
       if (user == null) {
-          const UserSignIn = {
-            username: userEmail,
-            email: userEmail,
-            password:password ,
-            phoneNumber: '',
-            address: '',
-            role: Role.SALESMAN,
-            gender: Gender.MALE,
-            dateOfBirth: null,
-            avatar: userGoogle['picture'] ?? ' ',
-            provider: 'local',
-          };
-          //
-          const createdUser = await this.userService.create(UserSignIn);
-          delete createdUser.dateOfBirth;
-          const dataLogin = {
-            ...createdUser,
-            dateOfBirth: ' ',
-          };
-          //
-          const tokens = await this.login(dataLogin);
-          return tokens;
-          // login
-        } else {
-          const UserSignIn = user;
-          const tokens = await this.login(UserSignIn);
-          return tokens;
-        }
+        const UserSignIn = {
+          username: userEmail,
+          email: userEmail,
+          password: password,
+          phoneNumber: '',
+          address: '',
+          role: Role.SALESMAN,
+          gender: Gender.MALE,
+          dateOfBirth: null,
+          avatar: userGoogle['picture'] ?? ' ',
+          provider: 'local',
+        };
+        //
+        const createdUser = await this.userService.create(UserSignIn);
+        delete createdUser.dateOfBirth;
+        const dataLogin = {
+          ...createdUser,
+          dateOfBirth: ' ',
+        };
+        //
+        const tokens = await this.login(dataLogin);
+        return tokens;
+        // login
+      } else {
+        const UserSignIn = user;
+        const tokens = await this.login(UserSignIn);
+        return tokens;
+      }
     } catch (error) {
       console.log('something wrong when signing in with googl');
       console.error('Error:', error.response);
       throw error;
     }
-   };
+  };
   facebookLogin = async (emailFacebook: string): Promise<any> => {
-    console.log(emailFacebook, process.env.ACCESS_TOKEN_JWT_SECRET_KEY)
+    console.log(emailFacebook, process.env.ACCESS_TOKEN_JWT_SECRET_KEY);
 
     try {
-
       // const userGoogle = decoded;
       //using email as username
       const userName = emailFacebook;
       const userEmail = emailFacebook;
       // defautl password setting
-      const password =
-        'userFacebook' + emailFacebook ;
+      const password = 'userFacebook' + emailFacebook;
       // validate user - null -> create a new user
       const user = await this.validateUser(userName, password);
-        // create
+      // create
       if (user == null) {
-          const UserSignIn = {
-            username: emailFacebook,
-            email: emailFacebook,
-            password:password ,
-            phoneNumber: '',
-            address: '',
-            role: Role.SALESMAN,
-            gender: Gender.MALE,
-            dateOfBirth: null,
-            avatar: ' ',
-            provider: 'local',
-          };
-          //
-          const createdUser = await this.userService.create(UserSignIn);
-          delete createdUser.dateOfBirth;
-          const dataLogin = {
-            ...createdUser,
-            dateOfBirth: ' ',
-          };
-          //
-          const tokens = await this.login(dataLogin);
-          return tokens;
-          // login
-        } else {
-          const UserSignIn = user;
-          const tokens = await this.login(UserSignIn);
-          return tokens;
-        }
+        const UserSignIn = {
+          username: emailFacebook,
+          email: emailFacebook,
+          password: password,
+          phoneNumber: '',
+          address: '',
+          role: Role.SALESMAN,
+          gender: Gender.MALE,
+          dateOfBirth: null,
+          avatar: ' ',
+          provider: 'local',
+        };
+        //
+        const createdUser = await this.userService.create(UserSignIn);
+        delete createdUser.dateOfBirth;
+        const dataLogin = {
+          ...createdUser,
+          dateOfBirth: ' ',
+        };
+        //
+        const tokens = await this.login(dataLogin);
+        return tokens;
+        // login
+      } else {
+        const UserSignIn = user;
+        const tokens = await this.login(UserSignIn);
+        return tokens;
+      }
     } catch (error) {
       console.log('something wrong when signing in with googl');
       console.error('Error:', error.response);
       throw error;
     }
-   };
+  };
   validateUser = async (username: string, password: string): Promise<any> => {
     // Check username and password
     return await this.userService.checkValidateUser({
@@ -267,18 +266,39 @@ export class AuthService {
         });
   };
 
-  login = async (user: UserSignIn) => {
+  async login(user) {
     try {
-      const tokens: AuthToken = await this.generateToken(user);
+      const tokens = await this.generateToken(user);
       if (tokens) {
         user['hashedRefreshToken'] = tokens.refreshToken;
         await this.saveUserCreatedWithToken(user);
       }
+
+      const checkPrivateConversationExisted =
+        await this.chatService.checkPrivateConversationExisted(user.id, user.id);
+
+      let conversation ;
+      if (checkPrivateConversationExisted) {
+        conversation = await this.chatService.getConversationOfCreator(user);
+        console.log("🚀 ~ AuthService ~ login= ~ getConversationOfCreator:", conversation);
+        tokens.conversationId = conversation[0].id
+
+      } else {
+        conversation = await this.chatService.createPrivateConversation(user, {
+          title: 'Chat',
+          isBot: false,
+          participationUserId: user.id,
+        });
+        tokens.conversationId = conversation.id
+
+        console.log("🚀 ~ AuthService ~ login= ~ createPrivateConversation:", conversation);
+      }
+      console.log(tokens)
       return tokens;
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new Error(error.message);
     }
-  };
+  }
 
   generateToken = async (user: UserSignIn) => {
     const payload = {
@@ -294,7 +314,7 @@ export class AuthService {
       secret: this.configService.get('REFRESH_TOKEN_JWT_SECRET_KEY'),
       expiresIn: 60 * 60 * 24 * 7, //7 days
     });
-
+    const conversationId :any= ""
     user['is_refresh']
       ? generateTokenType.push(accessTokenType)
       : generateTokenType.push(accessTokenType, refreshTokenType);
@@ -303,6 +323,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+      conversationId,
     };
   };
 
