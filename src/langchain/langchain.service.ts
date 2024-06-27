@@ -15,7 +15,7 @@ import { HumanMessage } from './dto/langchain.input';
 import { ConfigService } from '@nestjs/config';
 
 // import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+// import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 // mock vectore embedding data
 interface Document<T> {
   title: string; // Assuming each document has a title of type string
