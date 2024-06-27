@@ -15,7 +15,7 @@ import { HumanMessage } from './dto/langchain.input';
 import { ConfigService } from '@nestjs/config';
 
 // import { GoogleGenerativeAI } from '@google/generative-ai';
-// import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 // mock vectore embedding data
 interface Document<T> {
   title: string; // Assuming each document has a title of type string
@@ -169,12 +169,12 @@ export class LangchainService {
       // //     maxOutputTokens: 500,
       // //   },
       // // });
-      // const model = new ChatGoogleGenerativeAI({
-      //   model: "gemini-pro",
-      //   maxOutputTokens: 2048,
-      // });
-      // const result =  await model.invoke(humanMessage)
-      // const modelResponse = result.content;
+      const model = new ChatGoogleGenerativeAI({
+        model: "gemini-pro",
+        maxOutputTokens: 2048,
+      });
+      const result =  await model.invoke(humanMessage)
+      const modelResponse = result.content;
       // console.log('modelResponse', modelResponse);
       // Send the new human message
       // const result = await chat.sendMessage(humanMessage);
@@ -205,9 +205,9 @@ export class LangchainService {
       //     email: user.email,
       //   },
       // });
-      // console.log('modelResponse', modelResponse);
+      console.log('modelResponse', modelResponse);
 
-      return "modelResponse";
+      return modelResponse;
     } catch (error) {
       console.log(this.configService.get('GOOGLE_API_KEY'))
 
