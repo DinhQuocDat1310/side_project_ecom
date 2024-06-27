@@ -158,24 +158,24 @@ export class LangchainService {
       //     email: user.email,
       //   },
       // });
-      console.log(humanMessage);
-      const history = [];
-      // const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+      // console.log(humanMessage);
+      // const history = [];
+      // // const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-      // // Initialize chat with existing history
-      // const chat = model.startChat({
-      //   history: history,
-      //   generationConfig: {
-      //     maxOutputTokens: 500,
-      //   },
+      // // // Initialize chat with existing history
+      // // const chat = model.startChat({
+      // //   history: history,
+      // //   generationConfig: {
+      // //     maxOutputTokens: 500,
+      // //   },
+      // // });
+      // const model = new ChatGoogleGenerativeAI({
+      //   model: "gemini-pro",
+      //   maxOutputTokens: 2048,
       // });
-      const model = new ChatGoogleGenerativeAI({
-        model: "gemini-pro",
-        maxOutputTokens: 2048,
-      });
-      const result =  await model.invoke(humanMessage)
-      const modelResponse = result.content;
-      console.log('modelResponse', modelResponse);
+      // const result =  await model.invoke(humanMessage)
+      // const modelResponse = result.content;
+      // console.log('modelResponse', modelResponse);
       // Send the new human message
       // const result = await chat.sendMessage(humanMessage);
       // console.log(
@@ -205,9 +205,9 @@ export class LangchainService {
       //     email: user.email,
       //   },
       // });
-      console.log('modelResponse', modelResponse);
+      // console.log('modelResponse', modelResponse);
 
-      return modelResponse;
+      return "modelResponse";
     } catch (error) {
       console.log(this.configService.get('GOOGLE_API_KEY'))
 
