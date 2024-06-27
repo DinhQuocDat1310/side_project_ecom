@@ -14,8 +14,8 @@ import { MessageStatus } from '@prisma/client';
 import { HumanMessage } from './dto/langchain.input';
 import { ConfigService } from '@nestjs/config';
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
+// import { GoogleGenerativeAI } from '@google/generative-ai';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 // mock vectore embedding data
 interface Document<T> {
   title: string; // Assuming each document has a title of type string
@@ -28,14 +28,14 @@ export class LangchainService {
   retriever: any;
   client: MongoClient;
   llm: OpenAIEmbeddings;
-  genAI: GoogleGenerativeAI;
+  // genAI: GoogleGenerativeAI;
 
   constructor(
     private readonly configService: ConfigService, // private readonly prismaService: PrismaService, // private readonly userService: UserService,
   ) {
     this.llm = new OpenAIEmbeddings();
     this.connectToDatabase();
-    this.genAI = new GoogleGenerativeAI('AIzaSyARIzN7trzwMF86sJQaQdEsiFshfRmjex0');
+    // this.genAI = new GoogleGenerativeAI('AIzaSyARIzN7trzwMF86sJQaQdEsiFshfRmjex0');
   }
   async connectToDatabase() {
     try {
@@ -160,28 +160,34 @@ export class LangchainService {
       // });
       console.log(humanMessage);
       const history = [];
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+      // const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-      // Initialize chat with existing history
-      const chat = model.startChat({
-        history: history,
-        generationConfig: {
-          maxOutputTokens: 500,
-        },
+      // // Initialize chat with existing history
+      // const chat = model.startChat({
+      //   history: history,
+      //   generationConfig: {
+      //     maxOutputTokens: 500,
+      //   },
+      // });
+      const model = new ChatGoogleGenerativeAI({
+        model: "gemini-pro",
+        maxOutputTokens: 2048,
       });
-
+      const result =  await model.invoke(humanMessage)
+      const modelResponse = result.content;
+      console.log('modelResponse', modelResponse);
       // Send the new human message
-      const result = await chat.sendMessage(humanMessage);
-      console.log(
-        '🚀 ~ LangchainService ~ vector_search_gemini_model ~ result:',
-        result,
-      );
-      const response = result.response;
-      console.log(
-        '🚀 ~ LangchainService ~ vector_search_gemini_model ~ response:',
-        response,
-      );
-      const modelResponse = response.text();
+      // const result = await chat.sendMessage(humanMessage);
+      // console.log(
+      //   '🚀 ~ LangchainService ~ vector_search_gemini_model ~ result:',
+      //   result,
+      // );
+      // const response = result.response;
+      // console.log(
+      //   '🚀 ~ LangchainService ~ vector_search_gemini_model ~ response:',
+      //   response,
+      // );
+      // const modelResponse = response.text();
 
       // Update the message history with the model's response
       // const newModelMessage = {
