@@ -285,7 +285,7 @@ export class ChatService {
   ): Promise<MessageData> => {
     const { messageText, conversationId } = createMessageInput;
     await this.checkAllConversationExisted(user.id, conversationId);
-    let res = await this.langchainService.query({
+    let res = await this.langchainService.queryGemini({
       message: messageText,
     });
     // console.log(res)
