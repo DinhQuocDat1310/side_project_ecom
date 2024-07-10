@@ -141,27 +141,7 @@ export class LangchainService {
   }
   async vector_search_gemini_model(humanMessage: string): Promise<any> {
     try {
-      // const retriever = this.retriever;
 
-      // Update user message history with the new message
-      // const newUserMessagse = {
-      //   role: 'user',
-      //   parts: [{ text: humanMessage }],
-      // };
-
-      // Assuming user.message is an array
-      // user.message.push(newUserMessage);
-
-      // await this.prismaService.user.update({
-      //   data: {
-      //     message: user.message,
-      //   },
-      //   where: {
-      //     email: user.email,
-      //   },
-      // });
-      // console.log(humanMessage);
-      // const history = [];
       const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
 
       // Initialize chat with existing history
@@ -171,53 +151,26 @@ export class LangchainService {
           maxOutputTokens: 500,
         },
       });
-      // const model = new ChatGoogleGenerativeAI({
-      //   model: "gemini-pro",
-      //   maxOutputTokens: 2048,
-      // });
-      // const result =  await model.invoke(humanMessage)
-      // const modelResponse = result.content;
-      // console.log('modelResponse', modelResponse);
-      // Send the new human message
+
       const result = await chat.sendMessage(humanMessage);
-      // console.log(
-      //   '🚀 ~ LangchainService ~ vector_search_gemini_model ~ result:',
-      //   result,
-      // );
       const response = result.response;
-      // console.log(
-      //   '🚀 ~ LangchainService ~ vector_search_gemini_model ~ response:',
-      //   response,
-      // );
       const modelResponse = response.text();
 
-      // Update the message history with the model's response
-      // const newModelMessage = {
-      //   role: 'model',
-      //   parts: [{ text: modelResponse }],
-      // };
-
-      // user.message.push(newModelMessage);
-
-      // await this.prismaService.user.update({
-      //   data: {
-      //     message: user.message,
-      //   },
-      //   where: {
-      //     email: user.email,
-      //   },
-      // });
       console.log('modelResponse', modelResponse);
 
       return modelResponse;
     } catch (error) {
       console.log(this.configService.get('GOOGLE_API_KEY'))
-
       console.log(error)
       await this.client.close();
       throw new ForbiddenException(
-        'Something went wrong with the OpenAI key, please try again.',
+        'Something went wrong with the Google AI key, please try again.',
       );
     }
+
+
+
   }
+
+ 
 }
