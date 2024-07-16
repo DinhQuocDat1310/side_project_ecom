@@ -9,7 +9,8 @@ import { RefreshTokenJwtStrategy } from './strategies/refresh-token-jwt.strategy
 import { AccessTokenJwtStrategy } from './strategies/access-token-jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
-
+import { ChatService } from 'src/chat/chat.service';
+import { LangchainService } from 'src/langchain/langchain.service';
 @Module({
   imports: [PassportModule],
   providers: [
@@ -23,6 +24,9 @@ import { UserService } from 'src/user/user.service';
     ConfigService,
     UserService,
     JwtService,
+    ChatService,
+    LangchainService,
+
   ],
 })
 export class AuthModule {}
